@@ -165,6 +165,19 @@ services:
       retries: 20
     restart: always
 
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+#      - ./clickhouse-data:/var/lib/clickhouse
+      - ./base/clickhouse/init-scripts:/docker-entrypoint-initdb.d
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
   keycloak:
     image: bedag/hello-data-dc-keycloak
     env_file: .env
@@ -173,12 +186,14 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      KEYCLOAK_IMPORT: /opt/keycloak/data/import/realm.json
+      KEYCLOAK_IMPORT: /opt/keycloak/data/import/hellodata.json
       DB_VENDOR: h2
       KC_HEALTH_ENABLED: "true"
       JAVA_OPTS_APPEND: "-Dcom:redhat:fips=false"
       KC_SPI_CONFIG_UPDATE_MODE: "IGNORE"
       KC_SPI_CONFIG_UPDATE_ENABLE: "false"
+    volumes:
+      - ./base/keycloak/hellodata.json:/opt/keycloak/data/import/hellodata.json
     healthcheck:
       test: [ "CMD", "curl", "http://localhost:8080/realms/hellodata" ]
       interval: 10s
