@@ -1,0 +1,10 @@
+python-dotenv==1.1.0
+dlt==1.8.1
+duckdb==1.2.1
+pydantic==2.10.6
+dag-factory
+sqlalchemy>=1.4
+dlt[duckdb,postgres,sql-database,clickhouse]>=1.8.1
+# mysqlclient>=2.2.7
+# psycopg2
+# connectorx
