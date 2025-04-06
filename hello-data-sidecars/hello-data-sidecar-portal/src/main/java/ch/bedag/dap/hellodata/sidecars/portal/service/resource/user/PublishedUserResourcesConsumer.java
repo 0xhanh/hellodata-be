@@ -70,20 +70,31 @@ public class PublishedUserResourcesConsumer {
         natsSenderService.publishMessageToJetStream(UPDATE_METAINFO_USERS_CACHE, userCacheUpdate);
     }
 
+    // hvd 
     private void saveUsersToCache(UserResource userResource, List<SubsystemUser> data) {
         for (SubsystemUser subsystemUser : data) {
-            boolean isAdmin = subsystemUser.getRoles().stream().anyMatch(role -> role.getName().equalsIgnoreCase(SlugifyUtil.BI_ADMIN_ROLE_NAME));
-            UserCache userCache = redisTemplate.opsForValue().get(USER_CACHE_PREFIX + subsystemUser.getEmail());
+            if (subsystemUser.getEmail() == null) {
+                log.warn("Skipping user with null email in instance {}", userResource.getInstanceName());
+                continue;
+            }
+
+            boolean isAdmin = subsystemUser.getRoles().stream()
+                    .anyMatch(role -> role.getName().equalsIgnoreCase(SlugifyUtil.BI_ADMIN_ROLE_NAME));
+
+            String cacheKey = USER_CACHE_PREFIX + subsystemUser.getEmail();
+            UserCache userCache = redisTemplate.opsForValue().get(cacheKey);
             if (userCache == null) {
                 userCache = new UserCache();
                 userCache.setSupersetInstancesAdmin(new HashSet<>());
             }
+
             if (isAdmin) {
                 userCache.getSupersetInstancesAdmin().add(userResource.getInstanceName());
             } else {
                 userCache.getSupersetInstancesAdmin().remove(userResource.getInstanceName());
             }
-            redisTemplate.opsForValue().set(subsystemUser.getEmail(), userCache);
+
+            redisTemplate.opsForValue().set(cacheKey, userCache);
         }
     }
 }

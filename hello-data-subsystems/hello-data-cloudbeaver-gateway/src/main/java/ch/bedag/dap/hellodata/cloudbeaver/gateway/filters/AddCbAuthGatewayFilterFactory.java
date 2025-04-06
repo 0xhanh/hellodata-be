@@ -62,14 +62,14 @@ public class AddCbAuthGatewayFilterFactory extends AbstractGatewayFilterFactory<
         Object givenName = authenticationToken.getToken().getClaims().get("given_name");
         Object familyName = authenticationToken.getToken().getClaims().get("family_name");
         String cbRolesHeader = toCbRolesHeader(authenticationToken.getAuthorities());
-
+    
         log.debug("Requested URI Path: {}", exchange.getRequest().getURI().getPath());
         log.debug("\taddCbAuthHeaders for user {}", authenticationToken);
         log.debug("\temail: {}", email);
         log.debug("\tgiven_name: {}", givenName);
         log.debug("\tfamily_name: {}", familyName);
         log.debug("\tauthorities: {}", cbRolesHeader);
-
+    
         log.debug("\tX-User header: {}", email);
         log.debug("\tX-Role header: {}", cbRolesHeader);
         ServerHttpRequest serverHttpRequest = exchange.getRequest()
@@ -78,6 +78,9 @@ public class AddCbAuthGatewayFilterFactory extends AbstractGatewayFilterFactory<
                 .header("X-Role", cbRolesHeader)
                 .header("X-First-name", (String) givenName)
                 .header("X-Last-name", (String) familyName)
+                // hvd temporary solution
+                // for more: https://github.com/dbeaver/cloudbeaver/wiki/Reverse-proxy-header-authentication
+                .header("X-Team", "ADMIN") // TODO: get from user
                 .build();
         ServerWebExchange serverWebExchange = exchange.mutate().request(serverHttpRequest).build();
         return serverWebExchange;
