@@ -32,6 +32,7 @@ import ch.bedag.dap.hellodata.portal.base.HDControllerTest;
 import ch.bedag.dap.hellodata.portal.base.config.SystemProperties;
 import ch.bedag.dap.hellodata.portal.role.data.RoleDto;
 import ch.bedag.dap.hellodata.portal.user.data.*;
+import ch.bedag.dap.hellodata.portal.user.service.KeycloakService;
 import ch.bedag.dap.hellodata.portal.user.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -63,6 +64,8 @@ class UserControllerTest extends HDControllerTest {
     private HelloDataContextConfig helloDataContextConfig;
     @MockBean
     private SystemProperties systemProperties;
+    @MockBean
+    private KeycloakService keycloakService;
 
     @Test
     void createUser_noPrivilegesShouldReturnForbidden() throws Exception {
@@ -75,7 +78,7 @@ class UserControllerTest extends HDControllerTest {
         createUserRequestDto.setUser(adUserDto);
         UUID currentUserId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
-        when(userService.createUser("test@test.com", "Test", "User")).thenReturn(userId.toString());
+        when(userService.createUser("test@test.com", "Test", "User", AdUserOrigin.LOCAL)).thenReturn(userId.toString());
 
         // when then
         mockMvc.perform(post("/users").header("authorization", generateToken(currentUserId)).contentType(MediaType.APPLICATION_JSON).content(asJsonString(createUserRequestDto)))
@@ -90,11 +93,12 @@ class UserControllerTest extends HDControllerTest {
         adUserDto.setEmail("test@test.com");
         adUserDto.setFirstName("Test");
         adUserDto.setLastName("User");
+        adUserDto.setOrigin(AdUserOrigin.LOCAL);
         createUserRequestDto.setUser(adUserDto);
 
         UUID currentUserId = UUID.randomUUID();
         UUID createdUserId = UUID.randomUUID();
-        when(userService.createUser("test@test.com", "Test", "User")).thenReturn(createdUserId.toString());
+        when(userService.createUser("test@test.com", "Test", "User", AdUserOrigin.LOCAL)).thenReturn(createdUserId.toString());
 
         // when then
         mockMvc.perform(post("/users").header("authorization", generateToken(currentUserId, Set.of("USER_MANAGEMENT")))
