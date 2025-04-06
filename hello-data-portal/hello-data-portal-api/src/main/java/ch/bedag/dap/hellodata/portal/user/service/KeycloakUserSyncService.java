@@ -26,11 +26,15 @@
  */
 package ch.bedag.dap.hellodata.portal.user.service;
 
+import ch.bedag.dap.hellodata.portal.initialize.event.SyncAllUsersEvent;
+import ch.bedag.dap.hellodata.portal.user.data.AdUserDto;
+import ch.bedag.dap.hellodata.portal.user.data.AdUserOrigin;
 import ch.bedag.dap.hellodata.portalcommon.user.entity.UserEntity;
 import ch.bedag.dap.hellodata.portalcommon.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +49,8 @@ public class KeycloakUserSyncService {
 
     private final KeycloakService keycloakService;
     private final UserRepository userRepository;
+    private final UserService userService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     /**
      * Checks if any of keycloak users has a changed id (e.g: user removed directly in the keycloak and then added again)
@@ -53,20 +59,27 @@ public class KeycloakUserSyncService {
     @Scheduled(fixedDelayString = "${hello-data.auth-server.sync-users-schedule-hours}", timeUnit = TimeUnit.HOURS)
     public void syncUsers() {
         log.debug("[sync-users-with-keycloak] Started");
-        List<UserRepresentation> allUsers = keycloakService.getAllUsers();
         List<UserEntity> allPortalUsers = userRepository.findAll();
-        for (UserRepresentation userRepresentation : allUsers) {
-            UserEntity userEntity = allPortalUsers.stream().filter(user -> user.getEmail().equalsIgnoreCase(userRepresentation.getEmail())).findFirst().orElse(null);
-            if (userEntity != null) {
+        for (UserEntity userEntity : allPortalUsers) {
+            UserRepresentation userRepresentation = keycloakService.getUserRepresentationByEmail(userEntity.getEmail());
+            if (userRepresentation != null) {
                 userEntity.setAuthId(userRepresentation.getId());
                 userEntity.setEnabled(userRepresentation.isEnabled());
                 userEntity.setFirstName(userRepresentation.getFirstName());
                 userEntity.setLastName(userRepresentation.getLastName());
                 userEntity.setSuperuser(userEntity.getSuperuser());//set flag to not fetch lazy loading relations
+                List<AdUserDto> adUserDtos = userService.searchUser(userEntity.getEmail());
+                log.debug("[sync-users-with-keycloak] Found users from providers: {}", adUserDtos);
+                boolean isFederated = adUserDtos.stream().anyMatch(adUserDto -> adUserDto.getOrigin() == AdUserOrigin.LDAP);
+                log.debug("[sync-users-with-keycloak] Is user {} federated: {}", userEntity.getEmail(), isFederated);
+                log.debug("[sync-users-with-keycloak] Is user {} federated in keycloak: {}", userEntity.getEmail(), userRepresentation.getFederationLink());
+                userEntity.setFederated(isFederated || userRepresentation.getFederationLink() != null);
             }
         }
         userRepository.saveAll(allPortalUsers);
-        log.debug("[sync-users-with-keycloak] Completed");
+        userRepository.flush();
+        applicationEventPublisher.publishEvent(new SyncAllUsersEvent());
+        log.debug("[sync-users-with-keycloak] Completed, starting users with subsystems sync....");
     }
 
 }
