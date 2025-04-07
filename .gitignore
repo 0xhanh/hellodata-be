@@ -288,3 +288,4 @@ hello-data-portal/hello-data-portal-ui/src/config/environment.js
 /.vscode/launch.json
 
 /note/*.md
+*.whl
