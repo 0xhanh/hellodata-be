@@ -31,9 +31,14 @@ volumes:
   minio-data:
   shared-data:
     driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/hanhvd/datax/hdb_storage
   #jupyterhub-data:
   shared_scripts:
     driver: local
+  nats-ui-data:
 
 
 networks:

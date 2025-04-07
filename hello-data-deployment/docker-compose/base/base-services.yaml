@@ -63,6 +63,7 @@ x-airflow-common:
 
   volumes:
     - shared-data:/opt/airflow/dags
+    - ./base/airflow/lib-dev:/opt/airflow/lib-dev
     - ./base/airflow/logs:/opt/airflow/logs
     - ./base/airflow/plugins:/opt/airflow/plugins
   user: "${AIRFLOW_UID:-50000}:0"
@@ -247,6 +248,8 @@ services:
       - 31311:31311
     depends_on:
       - nats
+    volumes:
+      - nats-ui-data:/db
     environment:
       - NATS_SERVER_URL=nats://nats:4222  # Connect to the NATS server within the network
 
@@ -341,7 +344,7 @@ services:
       - "keycloak.localhost:host-gateway"
 
   sftpgo:
-    image: drakkan/sftpgo
+    image: hanhx/sftpgo
     container_name: sftpgo
     environment:
       SFTPGO_HTTPD__BINDINGS__0__PORT: 8080
@@ -425,7 +428,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/hd_dbt_docs
       - SPRING_CLOUD_KUBERNETES_ENABLED=false
       - HELLO_DATA_FILES_STATIC_LOCATION=/storage
-      - HELLO_DATA_FILES_STATIC_LOCATION_TO_OMIT=/storage/Default_Data_Domain/dags,/storage/Extra_Data_Domain/dags
+      - HELLO_DATA_FILES_STATIC_LOCATION_TO_OMIT=/storage/Default_Data_Domain/dags,/storage/Extra_Data_Domain/dags,/storage/Default_Data_Domain/lib-dev
     links:
       - postgres
       - keycloak
@@ -606,6 +609,7 @@ services:
       _AIRFLOW_WWW_USER_CREATE: 'true'
       _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
+      _PIP_ADDITIONAL_REQUIREMENTS: ""
     user: "0:0"
     volumes:
       - ./base:/sources

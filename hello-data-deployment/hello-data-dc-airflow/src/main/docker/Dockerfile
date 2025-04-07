@@ -31,11 +31,12 @@ ADD conf/airflow.cfg /opt/airflow/airflow.cfg
 ADD conf/webserver_config.py /opt/airflow/webserver_config.py
 
 # hvd: Install requirement for biz domain
-ADD extra-requirements.txt ./extra-requirements.txt
-RUN pip install -r ./extra-requirements.txt
+ADD additional-requirements.txt ./additional-requirements.txt
+RUN pip install -r ./additional-requirements.txt
 
 # hvd: Installl lib-dev packages
-RUN pip install /opt/airflow/dags/lib-dev/
+ADD lib-dev ./lib-dev
+RUN pip install ./lib-dev/*.whl
 
 ADD db/02_01_add_extra_dd_connection.sql /db/changelog/changelogs/02_01_add_extra_dd_connection.sql
 RUN sed -i '/<\/databaseChangeLog>/d' /db/changelog/airflow-changelog.xml

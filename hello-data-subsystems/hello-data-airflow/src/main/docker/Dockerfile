@@ -72,7 +72,8 @@ USER root
 RUN apt-get update && \
     apt-get install -y dos2unix && \
     # deps for airflow
-    apt-get install --no-install-recommends -y wget
+    apt-get install --no-install-recommends -y wget \
+    apt-get install -y gosu
 
 # Make /liquibase directory and change owner to superset
 RUN mkdir /liquibase && chown airflow /liquibase
