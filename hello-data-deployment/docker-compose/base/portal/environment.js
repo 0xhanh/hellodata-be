@@ -1,13 +1,15 @@
 window.environment = {
     production: false,
-    portalApi: 'http://localhost:8081/api',
-    docsApi: 'http://localhost:8086/dbt-docs',
+    // portalApi: 'http://localhost:8081/api',
+    portalApi: 'http://192.168.51.168:8081/api',
+    docsApi: 'http://192.168.51.168:8086/dbt-docs',
     debugInfoEnabled: true,
     authConfig: {
       logLevel: 1,
-      authority: 'http://localhost:38080/realms/hellodata',
-      redirectUrl: 'http://localhost:8080/app/',
-      postLogoutRedirectUri: 'http://localhost:8080/app/',
+      authority: 'http://192.168.51.168:38080/realms/hellodata',
+      // redirectUrl: 'http://localhost:8080/app/',
+      redirectUrl: 'http://192.168.51.168:8080/app/',
+      postLogoutRedirectUri: 'http://192.168.51.168:8080/app/',
       clientId: 'frontend-client',
       scope: 'openid profile email offline_access'
     },

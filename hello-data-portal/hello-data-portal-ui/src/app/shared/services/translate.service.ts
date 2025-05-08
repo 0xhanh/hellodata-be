@@ -66,7 +66,6 @@ export class TranslateService implements OnDestroy {
   }
 
   public setActiveLang(lang: string) {
-    console.log('Setting active language to:', lang);
     this.translocoService.setActiveLang(lang);
   }
 

@@ -84,6 +84,7 @@ logging.getLogger('flask_appbuilder.security').setLevel(logging.DEBUG)
 LETTERS_AND_DIGITS = string.ascii_letters + string.digits
 OIDC_ISSUER = os.getenv('KEYCLOAK_BASE_URL', 'http://keycloak:8080/realms/hellodata')
 logger.info(f'OIDC_ISSUER: {OIDC_ISSUER}')
+
 req = requests.get(OIDC_ISSUER)
 key_der_base64 = req.json()["public_key"]
 key_der = b64decode(key_der_base64.encode())

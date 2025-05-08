@@ -96,12 +96,20 @@ RUN set -x &&  \
 RUN echo "$LB_SHA256 liquibase-${LIQUIBASE_VERSION}.tar.gz" | sha256sum -c -
 RUN tar -xzf liquibase-${LIQUIBASE_VERSION}.tar.gz
 
+
 # add liquibase migrations
 COPY --chown=airflow:root ./db/changelog /db/changelog
 COPY --chown=airflow:root ./db/wait-and-migrate.sh /db/wait-and-migrate.sh
 COPY --chown=airflow:root ./entrypoint.sh /app/entrypoint.sh
-# Airflow adds $AIRFLOW_HOME/config to sys.path when Airflow is initialized (from 2.10.1)
+# Airflow adds $AIRFLOW_HOME/config to sys.path when Airflow is initialized
 COPY --chown=airflow:root ./airflow_local_settings.py $AIRFLOW_HOME/config/airflow_local_settings.py
+
+# custom
+# RUN mkdir -p $AIRFLOW_HOME/www_static/custom && chown airflow:root $AIRFLOW_HOME/www_static/custom
+# COPY --chown=airflow:root ./auth-config.js.template /app/auth-config.js.template
+# COPY --chown=airflow:root ./generate-auth-config.sh /app/generate-auth-config.sh
+
+# COPY --chown=airflow:root ./airflow-auth-bridge.js $AIRFLOW_HOME/airflow-auth-bridge.js
 
 RUN chmod a+x /db/*.sh
 RUN chmod a+x /app/*.sh

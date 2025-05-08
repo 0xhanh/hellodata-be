@@ -40,7 +40,8 @@ window.environment = {
       devToolsMailbox: {protocol: 'http://', host: '192.168.51.168', domain: ':8001'},
       // devToolsFileBrowser: {protocol: 'http://', host: 'localhost', domain: ':8080'},
       devToolsFileBrowser: {protocol: 'http://', host: '192.168.51.168', domain: ':8090'},
-      dataGov: {protocol: 'http://', host: '192.168.51.168', domain: ':8080/datagov'},
+      // dataGov: {protocol: 'http://', host: '192.168.51.168', domain: ':8080/datagov'},
+      dataGov: {protocol: 'http://', host: '192.168.51.165', domain: ':8585'}
     },
     footerConfig: {
       openSourceDataPlatformUrl: 'http://kanton-bern.github.io/hellodata-be',

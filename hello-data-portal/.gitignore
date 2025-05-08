@@ -36,4 +36,5 @@ target/
 ### Mac OS ###
 .DS_Store
 
+Makefile
 ../hello-data-deployment/docker-compose/smtp4dev-data/database.db
