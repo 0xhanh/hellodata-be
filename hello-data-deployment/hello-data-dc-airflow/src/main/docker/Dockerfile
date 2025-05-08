@@ -25,7 +25,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-FROM bedag/hello-data-airflow
+FROM hanhx/hello-data-airflow
 
 ADD conf/airflow.cfg /opt/airflow/airflow.cfg
 ADD conf/webserver_config.py /opt/airflow/webserver_config.py
@@ -35,8 +35,8 @@ ADD additional-requirements.txt ./additional-requirements.txt
 RUN pip install -r ./additional-requirements.txt
 
 # hvd: Installl lib-dev packages
-ADD lib-dev ./lib-dev
-RUN pip install ./lib-dev/*.whl
+# ADD lib-dev ./lib-dev
+# RUN pip install ./lib-dev/*.whl
 
 ADD db/02_01_add_extra_dd_connection.sql /db/changelog/changelogs/02_01_add_extra_dd_connection.sql
 RUN sed -i '/<\/databaseChangeLog>/d' /db/changelog/airflow-changelog.xml

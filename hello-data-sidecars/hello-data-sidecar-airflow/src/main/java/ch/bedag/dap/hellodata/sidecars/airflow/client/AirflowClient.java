@@ -55,6 +55,7 @@ public class AirflowClient {
 
     private final String host;
     private final int port;
+    private final String contextPath;
 
     private final String username;
 
@@ -62,9 +63,10 @@ public class AirflowClient {
 
     private final CloseableHttpClient client;
 
-    public AirflowClient(String host, int port, String username, String password) {
+    public AirflowClient(String host, int port, String contextPath, String username, String password) {
         this.host = host;
         this.port = port;
+        this.contextPath = contextPath;
         this.username = username;
         this.password = password;
 
@@ -105,7 +107,7 @@ public class AirflowClient {
      * Gets a user.
      */
     public AirflowUserResponse getUser(String airflowUsername) throws URISyntaxException, IOException {
-        HttpUriRequest request = AirflowApiRequestBuilder.getUserRequest(host, port, username, password, airflowUsername);
+        HttpUriRequest request = AirflowApiRequestBuilder.getUserRequest(host, port, contextPath, username, password, airflowUsername);
         try {
             ApiResponse resp = executeRequest(request);
             byte[] bytes = resp.getBody().getBytes(StandardCharsets.UTF_8);
@@ -124,7 +126,7 @@ public class AirflowClient {
      * Create a new user with unique username and email.
      */
     public AirflowUserResponse createUser(AirflowUser airflowUser) throws URISyntaxException, IOException {
-        HttpUriRequest request = AirflowApiRequestBuilder.getCreateUserRequest(host, port, username, password, airflowUser);
+        HttpUriRequest request = AirflowApiRequestBuilder.getCreateUserRequest(host, port, contextPath, username, password, airflowUser);
         ApiResponse resp = executeRequest(request);
         byte[] bytes = resp.getBody().getBytes(StandardCharsets.UTF_8);
         log.debug("createUser({}) response json \n{}", airflowUser.getEmail(), new String(bytes));
@@ -135,7 +137,7 @@ public class AirflowClient {
      * Delete a user with the following username.
      */
     public void deleteUser(String airflowUsername) throws URISyntaxException, IOException {
-        HttpUriRequest request = AirflowApiRequestBuilder.getDeleteUserRequest(host, port, username, password, airflowUsername);
+        HttpUriRequest request = AirflowApiRequestBuilder.getDeleteUserRequest(host, port, contextPath, username, password, airflowUsername);
         ApiResponse resp = executeRequest(request);
         if (resp.getBody() != null) {
             byte[] bytes = resp.getBody().getBytes(StandardCharsets.UTF_8);
@@ -147,7 +149,7 @@ public class AirflowClient {
      * Update (or rather set) the roles of a user
      **/
     public AirflowUserResponse updateUser(AirflowUserRolesUpdate userRolesUpdate, String usernameToUpdate) throws IOException, URISyntaxException {
-        HttpUriRequest request = AirflowApiRequestBuilder.getUpdateUserRequest(host, port, username, password, userRolesUpdate, usernameToUpdate);
+        HttpUriRequest request = AirflowApiRequestBuilder.getUpdateUserRequest(host, port, contextPath, username, password, userRolesUpdate, usernameToUpdate);
         ApiResponse resp = executeRequest(request);
         byte[] bytes = resp.getBody().getBytes(StandardCharsets.UTF_8);
         log.debug("updateUser({}) response json \n{}", username, new String(bytes));
@@ -158,7 +160,7 @@ public class AirflowClient {
      * Get List of roles available in Airflow
      */
     public AirflowRolesResponse roles() throws URISyntaxException, IOException {
-        HttpUriRequest request = AirflowApiRequestBuilder.getListRolesRequest(host, port, username, password);
+        HttpUriRequest request = AirflowApiRequestBuilder.getListRolesRequest(host, port, contextPath, username, password);
         ApiResponse resp = executeRequest(request);
         byte[] bytes = resp.getBody().getBytes(StandardCharsets.UTF_8);
         log.debug("roles({}) response json \n{}", username, new String(bytes));
@@ -169,7 +171,7 @@ public class AirflowClient {
      * Create a new user with unique username and email.
      */
     public void createRole(AirflowRole airflowRole) throws URISyntaxException, IOException {
-        HttpUriRequest request = AirflowApiRequestBuilder.getCreateRoleRequest(host, port, username, password, airflowRole);
+        HttpUriRequest request = AirflowApiRequestBuilder.getCreateRoleRequest(host, port, contextPath, username, password, airflowRole);
         ApiResponse resp = executeRequest(request);
         byte[] bytes = resp.getBody().getBytes(StandardCharsets.UTF_8);
         log.debug("createRole({}) response json \n{}", airflowRole, new String(bytes));
@@ -180,7 +182,7 @@ public class AirflowClient {
      * Get List of permissions available in Airflow
      */
     public AirflowPermissionsResponse permissions() throws URISyntaxException, IOException {
-        HttpUriRequest request = AirflowApiRequestBuilder.getListPermissionsRequest(host, port, username, password);
+        HttpUriRequest request = AirflowApiRequestBuilder.getListPermissionsRequest(host, port, contextPath, username, password);
         ApiResponse resp = executeRequest(request);
         byte[] bytes = resp.getBody().getBytes(StandardCharsets.UTF_8);
         log.debug("permissions({}) response json \n{}", username, new String(bytes));
@@ -188,7 +190,7 @@ public class AirflowClient {
     }
 
     public AirflowDagsResponse dags() throws URISyntaxException, IOException {
-        HttpUriRequest request = AirflowApiRequestBuilder.getDagsRequest(host, port, username, password);
+        HttpUriRequest request = AirflowApiRequestBuilder.getDagsRequest(host, port, contextPath, username, password);
         ApiResponse resp = executeRequest(request);
         byte[] bytes = resp.getBody().getBytes(StandardCharsets.UTF_8);
         log.debug("dags({}) response json \n{}", username, new String(bytes));
@@ -196,7 +198,7 @@ public class AirflowClient {
     }
 
     public AirflowDagRunsResponse dagRuns(String dagId) throws URISyntaxException, IOException {
-        HttpUriRequest request = AirflowApiRequestBuilder.getDagRunsRequest(host, port, username, password, dagId, "-start_date", "1");
+        HttpUriRequest request = AirflowApiRequestBuilder.getDagRunsRequest(host, port, contextPath, username, password, dagId, "-start_date", "1");
         ApiResponse resp = executeRequest(request);
         byte[] bytes = resp.getBody().getBytes(StandardCharsets.UTF_8);
         log.debug("dagRuns({}) response json \n{}", username, new String(bytes));
@@ -204,7 +206,7 @@ public class AirflowClient {
     }
 
     private AirflowUsersResponse getAirflowUsersResponse(int offset, int limit) throws URISyntaxException, IOException {
-        HttpUriRequest request = AirflowApiRequestBuilder.getListUsersRequest(host, port, username, password, offset, limit);
+        HttpUriRequest request = AirflowApiRequestBuilder.getListUsersRequest(host, port, contextPath, username, password, offset, limit);
         ApiResponse resp = executeRequest(request);
         byte[] bytes = resp.getBody().getBytes(StandardCharsets.UTF_8);
         log.debug("users() response json \n{}", new String(bytes));

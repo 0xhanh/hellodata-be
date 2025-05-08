@@ -80,10 +80,9 @@ public class AddCbAuthGatewayFilterFactory extends AbstractGatewayFilterFactory<
                 .header("X-Last-name", (String) familyName)
                 // hvd temporary solution
                 // for more: https://github.com/dbeaver/cloudbeaver/wiki/Reverse-proxy-header-authentication
-                .header("X-Team", "ADMIN") // TODO: get from user
+                .header("X-Team", "admin") // TODO: get from user
                 .build();
-        ServerWebExchange serverWebExchange = exchange.mutate().request(serverHttpRequest).build();
-        return serverWebExchange;
+        return exchange.mutate().request(serverHttpRequest).build();
     }
 
     public static ServerWebExchange removeAuthorizationHeader(ServerWebExchange exchange) {

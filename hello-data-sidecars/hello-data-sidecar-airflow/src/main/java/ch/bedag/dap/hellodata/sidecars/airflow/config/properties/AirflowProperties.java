@@ -32,9 +32,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties(prefix = "hello-data.airflow")
 public class AirflowProperties {
-
     private String host;
     private int port;
+    private String contextPath;
     private String adminUsername;
     private String adminPassword;
 }

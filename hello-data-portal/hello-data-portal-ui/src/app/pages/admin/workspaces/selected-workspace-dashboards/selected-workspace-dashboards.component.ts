@@ -38,7 +38,6 @@ import {Observable} from "rxjs";
   styleUrls: ['./selected-workspace-dashboards.component.scss']
 })
 export class SelectedWorkspaceDashboardsComponent {
-
   @Input()
   dashboards!: any[];
 

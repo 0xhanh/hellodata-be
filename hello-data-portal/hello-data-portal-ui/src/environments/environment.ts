@@ -52,7 +52,8 @@ export const environment: Environment = window.environment != undefined ? window
     showEnvironment: true,
     name: 'DEV'
   },
-  locale: 'de-CH',
+  // locale: 'de-CH',
+  locale: 'vi-CH',
   domainNamespace: '',
   baseDomain: '',
   subSystemsConfig: {
@@ -64,7 +65,8 @@ export const environment: Environment = window.environment != undefined ? window
     advancedAnalyticsViewer: {protocol: 'https://', host: 'jupyterhub', domain: ''},
     monitoringStatus: {protocol: 'https://', host: 'status', domain: ''},
     devToolsMailbox: {protocol: 'https://', host: 'mb', domain: ''},
-    devToolsFileBrowser: {protocol: 'https://', host: 'fs', domain: ''}
+    devToolsFileBrowser: {protocol: 'https://', host: 'fs', domain: ''},
+    dataGov: {protocol: 'http://', host: 'om', domain: '.cluster.local'}
   },
   footerConfig: {
     openSourceDataPlatformUrl: 'https://kanton-bern.github.io/hellodata-be',

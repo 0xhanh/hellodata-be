@@ -26,7 +26,7 @@
  */
 package ch.bedag.dap.hellodata.portalcommon.user.repository;
 
-import ch.bedag.dap.hellodata.portal.user.entity.DefaultUserEntity;
+import ch.bedag.dap.hellodata.portalcommon.user.entity.DefaultUserEntity;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;

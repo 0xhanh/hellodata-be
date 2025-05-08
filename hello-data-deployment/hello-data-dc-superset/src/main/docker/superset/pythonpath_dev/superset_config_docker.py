@@ -82,12 +82,12 @@ logging.getLogger('flask_appbuilder.security.manager').setLevel(logging.DEBUG)
 logging.getLogger('flask_appbuilder.security').setLevel(logging.DEBUG)
 
 LETTERS_AND_DIGITS = string.ascii_letters + string.digits
-OIDC_ISSUER = 'http://keycloak:8080/realms/hellodata'
+OIDC_ISSUER = os.getenv('KEYCLOAK_BASE_URL', 'http://keycloak:8080/realms/hellodata')
+logger.info(f'OIDC_ISSUER: {OIDC_ISSUER}')
 req = requests.get(OIDC_ISSUER)
 key_der_base64 = req.json()["public_key"]
 key_der = b64decode(key_der_base64.encode())
 public_key = serialization.load_der_public_key(key_der)
-
 
 # pyctuator
 def FLASK_APP_MUTATOR(app):
@@ -260,10 +260,8 @@ keycloak_metadata_url = os.getenv('KEYCLOAK_SERVER_METADATA_URL',
                                   'http://keycloak:8080/realms/hellodata/.well-known/openid-configuration')
 api_base_url = os.getenv('KEYCLOAK_API_BASE_URL', 'http://keycloak:8080/realms/hellodata/protocol/')
 
-log.info('keycloak_metadata_url')
-log.info(keycloak_metadata_url)
-log.info('api_base_url')
-log.info(api_base_url)
+log.info(f'keycloak_metadata_url: {keycloak_metadata_url}')
+log.info(f'api_base_url: {api_base_url}')
 
 OAUTH_PROVIDERS = [
     {

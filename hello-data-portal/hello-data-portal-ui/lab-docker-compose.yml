@@ -1,0 +1,15 @@
+services:
+  hello-data-portal-ui:
+      #image: bedag/hello-data-dc-portal
+      image: bedag/hello-data-portal-ui
+      restart: on-failure
+      # volumes:
+        # - ./base/portal/environment.js:/app/config/environment.js
+        # - ./base/portal/nginx_environment.js:/app/config/environment.js
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
+        - "keycloak.localhost:host-gateway"
+      environment:
+        CSP_HEADER_VALUE: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; connect-src * 'unsafe-inline' 'unsafe-eval' data: blob:; font-src * 'unsafe-inline' 'unsafe-eval' data: blob:; frame-src * 'unsafe-inline' 'unsafe-eval' data: blob:; img-src * 'unsafe-inline' 'unsafe-eval' data: blob:; media-src * 'unsafe-inline' 'unsafe-eval' data: blob:; object-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval' data: blob:; style-src * 'unsafe-inline' 'unsafe-eval' data: blob:; worker-src * 'unsafe-inline' 'unsafe-eval' data: blob:; frame-ancestors * 'unsafe-inline' 'unsafe-eval' data: blob:"
+      ports:
+        - 8181:80

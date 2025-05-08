@@ -25,9 +25,12 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-FROM apache/airflow:slim-2.8.1-python3.10
-
-ENV AIRFLOW_VERSION=2.8.1
+# FROM apache/airflow:slim-2.8.1-python3.10
+# ENV AIRFLOW_VERSION=2.8.1
+FROM apache/airflow:slim-2.10.5-python3.10
+## Set the timezone
+ENV TZ=Asia/Ho_Chi_Minh
+ENV AIRFLOW_VERSION=2.10.5
 ENV PYTHON_VERSION=3.10
 
 ## Change container image to root user to allow for global
@@ -64,7 +67,6 @@ COPY airflow.cfg $AIRFLOW_HOME/airflow.cfg
 
 #COPY settings.py /home/airflow/.local/lib/python3.10/site-packages/airflow/settings.py
 
-
 ##################### Add Liquibase to manage custom database scripts ######################
 USER root
 
@@ -72,7 +74,7 @@ USER root
 RUN apt-get update && \
     apt-get install -y dos2unix && \
     # deps for airflow
-    apt-get install --no-install-recommends -y wget \
+    apt-get install --no-install-recommends -y wget && \
     apt-get install -y gosu
 
 # Make /liquibase directory and change owner to superset
@@ -94,11 +96,12 @@ RUN set -x &&  \
 RUN echo "$LB_SHA256 liquibase-${LIQUIBASE_VERSION}.tar.gz" | sha256sum -c -
 RUN tar -xzf liquibase-${LIQUIBASE_VERSION}.tar.gz
 
-
 # add liquibase migrations
 COPY --chown=airflow:root ./db/changelog /db/changelog
 COPY --chown=airflow:root ./db/wait-and-migrate.sh /db/wait-and-migrate.sh
 COPY --chown=airflow:root ./entrypoint.sh /app/entrypoint.sh
+# Airflow adds $AIRFLOW_HOME/config to sys.path when Airflow is initialized (from 2.10.1)
+COPY --chown=airflow:root ./airflow_local_settings.py $AIRFLOW_HOME/config/airflow_local_settings.py
 
 RUN chmod a+x /db/*.sh
 RUN chmod a+x /app/*.sh

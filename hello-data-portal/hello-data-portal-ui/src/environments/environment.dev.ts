@@ -54,7 +54,8 @@ export const environment: Environment = window.environment != undefined ? window
     showEnvironment: true,
     headerColor: 'rgb(253,186,177)'
   },
-  locale: 'de-CH',
+  // locale: 'de-CH',
+  locale: 'vi',
   domainNamespace: 'hellodata-local',
   baseDomain: 'cluster.local',
   subSystemsConfig: {
@@ -66,7 +67,8 @@ export const environment: Environment = window.environment != undefined ? window
     advancedAnalyticsViewer: {protocol: 'http://', host: 'jupyterhub', domain: '.cluster.local'},
     monitoringStatus: {protocol: 'http://', host: 'status', domain: '.cluster.local'},
     devToolsMailbox: {protocol: 'http://', host: 'mb', domain: '.cluster.local'},
-    devToolsFileBrowser: {protocol: 'http://', host: 'fs', domain: '.cluster.local'}
+    devToolsFileBrowser: {protocol: 'http://', host: 'fs', domain: '.cluster.local'},
+    dataGov: {protocol: 'http://', host: '192.168.51.165:8585', domain: '.cluster.local'}
   },
   footerConfig: {
     openSourceDataPlatformUrl: 'https://kanton-bern.github.io/hellodata-be',

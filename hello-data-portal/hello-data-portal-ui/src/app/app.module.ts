@@ -84,6 +84,7 @@ import {DashboardImportExportModule} from "./pages/admin/dashboard-import-export
 import {PublishedAnnouncementsComponent} from "./pages/published-announcements/published-announcements.component";
 import {AdvancedAnalyticsModule} from "./pages/advanced-analytics/advanced-analytics.module";
 import {SubsystemUsersModule} from "./pages/admin/subsystem-users/subsystem-users.module";
+import { DataGovModule } from './pages/data-gov/data-gov.module';
 
 registerLocaleData(localeDECH);
 
@@ -146,6 +147,7 @@ registerLocaleData(localeDECH);
     UnsavedChangesModule,
     RedirectModule,
     DashboardImportExportModule,
+    DataGovModule,
   ],
   providers: [
     ScreenService,

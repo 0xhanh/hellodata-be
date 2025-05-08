@@ -57,6 +57,8 @@ public class CbJwtAuthenticationConverter implements Converter<Jwt, Collection<G
                 Set<GrantedAuthority> authorities = u.getAuthorities().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
                 log.info("\tloaded authorities {}", authorities);
                 return authorities;
+            }else{
+                log.warn("user {} not found", email);
             }
         }
         return Collections.emptyList();

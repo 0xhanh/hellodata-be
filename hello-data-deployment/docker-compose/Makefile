@@ -11,6 +11,9 @@ start-infra:
 start-cloudbeaver: start-infra
 	docker-compose up -d --build  cloudbeaver hello-data-cloudbeaver-gateway hello-data-sidecar-cloudbeaver
 
+start-sftpgo: start-infra
+	docker-compose up -d  sftpgo hello-data-sftpgo-sidecar
+
 start-dbt-docs: start-infra
 	docker-compose up -d --build hello-data-dbt-docs hello-data-dbt-docs-sidecar
 
@@ -23,8 +26,17 @@ start-portal:
 start-default-dd:
 	docker-compose up -d --build showcase-files-default-data-domain superset-app-default-data-domain superset-init-default-data-domain superset-worker-default-data-domain superset-worker-beat-default-data-domain hello-data-superset-sidecar-default-data-domain
 
+stop-default-dd:
+	docker-compose down showcase-files-default-data-domain superset-app-default-data-domain superset-init-default-data-domain superset-worker-default-data-domain superset-worker-beat-default-data-domain hello-data-superset-sidecar-default-data-domain
+
+start-extra-dd:
+	docker-compose up -d --build showcase-files-extra-data-domain superset-app-extra-data-domain superset-init-extra-data-domain superset-worker-extra-data-domain superset-worker-beat-extra-data-domain hello-data-superset-sidecar-extra-data-domain
+
+stop-extra-dd:
+	docker-compose down showcase-files-extra-data-domain superset-app-extra-data-domain superset-init-extra-data-domain superset-worker-extra-data-domain superset-worker-beat-extra-data-domain hello-data-superset-sidecar-extra-data-domain
+
 start-airflow:
-	docker-compose up -d --build airflow-webserver airflow-scheduler airflow-worker airflow-triggerer airflow-init flower hello-data-airflow-sidecar
+	# docker-compose up -d --build airflow-webserver airflow-scheduler airflow-worker airflow-triggerer airflow-init flower hello-data-airflow-sidecar
 
 start-jupyterhub: start-portal
 	docker-compose up -d --build hello-data-sidecar-jupyterhub-default-data-domain hello-data-jupyterhub-gateway-default-data-domain jupyterhub-notebook-default-data-domain jupyterhub-proxy-default-data-domain jupyterhub-default-data-domain

@@ -27,6 +27,7 @@
 package ch.bedag.dap.hellodata.cloudbeaver.gateway.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.config.ResourceHandlerRegistry;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 
 /**
@@ -35,4 +36,12 @@ import org.springframework.web.reactive.config.WebFluxConfigurer;
 @Configuration
 public class WebConfigurer implements WebFluxConfigurer {
 
+    /**
+     * Configure resource handlers for static resources like JavaScript files
+     */
+    // @Override
+    // public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    //     registry.addResourceHandler("/js/**")
+    //             .addResourceLocations("classpath:/static/js/");
+    // }
 }

@@ -29,6 +29,7 @@
 # Run wait and migrate on each start and then the entrypoint command for the airflow
 # https://airflow.apache.org/docs/docker-stack/entrypoint.html#entrypoint-commands
 
+# generate-auth-config.sh &
 # Check if environment variables are available
 if [ -n "$DB_HOST" ] && [ -n "$DB_NAME" ] && [ -n "$DB_PORT" ] && [ -n "$DB_USER" ] && [ -n "$DB_PASS" ]; then
     # Execute wait-and-migrate.sh in background

@@ -74,6 +74,7 @@ export interface SubSystemsConfig {
   monitoringStatus: SubSystemHost;
   devToolsMailbox: SubSystemHost;
   devToolsFileBrowser: SubSystemHost;
+  dataGov: SubSystemHost;
 }
 
 export interface SubSystemHost {

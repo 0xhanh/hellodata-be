@@ -51,16 +51,47 @@ public class TokenAuthenticationFilter implements WebFilter {
         log.debug("\tRequested URI Path: \n\t{}", exchange.getRequest().getURI().getPath());
         log.debug("\texisting cookies: \n\t{}", exchange.getRequest().getCookies().entrySet().stream().map(stringListEntry -> "\n\t" + stringListEntry.getValue() + "\n").toList());
 
+        String token = null;
+        
+        // 1. Try to get token from cookies
         MultiValueMap<String, HttpCookie> cookies = exchange.getRequest().getCookies();
-        ServerHttpRequest request = exchange.getRequest().mutate().headers(httpHeaders -> {
-            if (!cookies.isEmpty()) {
-                List<HttpCookie> cookie = cookies.get(SecurityConfig.ACCESS_TOKEN_COOKIE_NAME);
-                if (cookie != null && cookie.size() == 1) {
-                    String token = cookie.get(0).getValue();
-                    httpHeaders.add(SecurityConfig.AUTHORIZATION_HEADER_NAME, "Bearer " + token);
+        if (!cookies.isEmpty()) {
+            List<HttpCookie> cookie = cookies.get(SecurityConfig.ACCESS_TOKEN_COOKIE_NAME);
+            if (cookie != null && cookie.size() == 1) {
+                token = cookie.get(0).getValue();
+                log.debug("Token found in cookie");
+            }
+        }
+        
+        // 2. Try to get token from Authorization header if not found elsewhere
+        if (token == null) {
+            List<String> authHeaders = exchange.getRequest().getHeaders().get(SecurityConfig.AUTHORIZATION_HEADER_NAME);
+            if (authHeaders != null && !authHeaders.isEmpty()) {
+                String authHeader = authHeaders.get(0);
+                if (authHeader.startsWith("Bearer ")) {
+                    token = authHeader.substring(7);
+                    log.debug("Token found in Authorization header");
                 }
             }
+        }
+
+        // 3. Try to get token from query parameters if not found in cookies
+        if (token == null) {
+            String queryParam = exchange.getRequest().getQueryParams().getFirst("auth.access_token");
+            if (queryParam != null && !queryParam.isEmpty()) {
+                token = queryParam;
+                log.debug("Token found in query parameter");
+            }
+        }
+        
+        // Add the token to the request headers if found
+        final String finalToken = token;
+        ServerHttpRequest request = exchange.getRequest().mutate().headers(httpHeaders -> {
+            if (finalToken != null) {
+                httpHeaders.set(SecurityConfig.AUTHORIZATION_HEADER_NAME, "Bearer " + finalToken);
+            }
         }).build();
+        
         log.debug("\tadded headers: " + exchange.getRequest().getHeaders().entrySet().stream().map(entry -> "\n\t" + entry.getValue() + "\n").toList());
         return chain.filter(exchange.mutate().request(request).build());
     }

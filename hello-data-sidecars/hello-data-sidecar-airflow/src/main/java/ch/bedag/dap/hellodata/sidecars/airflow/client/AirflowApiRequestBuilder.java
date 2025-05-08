@@ -33,6 +33,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -51,7 +52,7 @@ import java.util.List;
 
 @UtilityClass
 public class AirflowApiRequestBuilder {
-
+    // This API endpoint is deprecated, please use the endpoint /auth/fab/v1 for this operation instead.
     private static final String USERS_API_ENDPOINT = "/api/v1/users";
     private static final String UPDATE_USER_API_ENDPOINT = USERS_API_ENDPOINT + "/%s";
     private static final String DELETE_USER_API_ENDPOINT = USERS_API_ENDPOINT + "/%s";
@@ -61,17 +62,17 @@ public class AirflowApiRequestBuilder {
     private static final String DAGS_API_ENDPOINT = "/api/v1/dags";
     private static final String DAG_RUNS_API_ENDPOINT = DAGS_API_ENDPOINT + "/%s/dagRuns";
 
-    public static HttpUriRequest getListUsersRequest(String host, int port, String username, String password, int offset, int limit) throws URISyntaxException {
-        return getHttpUriRequestWithPagination(host, port, username, password, USERS_API_ENDPOINT, offset, limit);
+    public static HttpUriRequest getListUsersRequest(String host, int port,  String contextPath, String username, String password, int offset, int limit) throws URISyntaxException {
+        return getHttpUriRequestWithPagination(host, port, contextPath, username, password, USERS_API_ENDPOINT, offset, limit);
     }
 
-    private static HttpUriRequest getHttpUriRequestWithPagination(String host, int port, String username, String password, String endpoint, int offset, int limit) throws
+    private static HttpUriRequest getHttpUriRequestWithPagination(String host, int port, String contextPath, String username, String password, String endpoint, int offset, int limit) throws
             URISyntaxException {
         Pair<String, String> offsetParam = Pair.of("offset", "" + offset);
         Pair<String, String> limitParam = Pair.of("limit", "" + limit);
         Pair<String, String> orderByParam = Pair.of("order_by", "email");
 
-        URI apiUri = buildUri(host, port, endpoint, List.of(offsetParam, limitParam, orderByParam));
+        URI apiUri = buildUri(host, port, contextPath, endpoint, List.of(offsetParam, limitParam, orderByParam));
 
         return RequestBuilder.get() //
                 .setUri(apiUri) //
@@ -80,8 +81,8 @@ public class AirflowApiRequestBuilder {
                 .build();
     }
 
-    public static HttpUriRequest getUserRequest(String host, int port, String username, String password, String airflowUsername) throws URISyntaxException, IOException {
-        URI apiUri = buildUri(host, port, String.format(GET_USER_API_ENDPOINT, airflowUsername), null);
+    public static HttpUriRequest getUserRequest(String host, int port, String contextPath, String username, String password, String airflowUsername) throws URISyntaxException, IOException {
+        URI apiUri = buildUri(host, port, contextPath, String.format(GET_USER_API_ENDPOINT, airflowUsername), null);
         return RequestBuilder.get() //
                 .setUri(apiUri) //
                 .setHeader(HttpHeaders.AUTHORIZATION, getBasicAuthenticationHeader(username, password)) //
@@ -89,8 +90,8 @@ public class AirflowApiRequestBuilder {
                 .build();
     }
 
-    public static HttpUriRequest getCreateUserRequest(String host, int port, String username, String password, AirflowUser airflowUser) throws URISyntaxException, IOException {
-        URI apiUri = buildUri(host, port, USERS_API_ENDPOINT, null);
+    public static HttpUriRequest getCreateUserRequest(String host, int port, String contextPath, String username, String password, AirflowUser airflowUser) throws URISyntaxException, IOException {
+        URI apiUri = buildUri(host, port, contextPath, USERS_API_ENDPOINT, null);
         String json = getObjectMapper().writeValueAsString(airflowUser);
         return RequestBuilder.post() //
                 .setUri(apiUri) //
@@ -100,8 +101,8 @@ public class AirflowApiRequestBuilder {
                 .build();
     }
 
-    public static HttpUriRequest getDeleteUserRequest(String host, int port, String username, String password, String userNameToUpdate) throws URISyntaxException, IOException {
-        URI apiUri = buildUri(host, port, String.format(DELETE_USER_API_ENDPOINT, userNameToUpdate), Collections.emptyList());
+    public static HttpUriRequest getDeleteUserRequest(String host, int port, String contextPath, String username, String password, String userNameToUpdate) throws URISyntaxException, IOException {
+        URI apiUri = buildUri(host, port, contextPath, String.format(DELETE_USER_API_ENDPOINT, userNameToUpdate), Collections.emptyList());
         return RequestBuilder.delete() //
                 .setUri(apiUri) //
                 .setHeader(HttpHeaders.AUTHORIZATION, getBasicAuthenticationHeader(username, password)) //
@@ -109,8 +110,8 @@ public class AirflowApiRequestBuilder {
                 .build();
     }
 
-    public static HttpUriRequest getCreateRoleRequest(String host, int port, String username, String password, AirflowRole airflowRole) throws URISyntaxException, IOException {
-        URI apiUri = buildUri(host, port, ROLES_API_ENDPOINT, null);
+    public static HttpUriRequest getCreateRoleRequest(String host, int port, String contextPath, String username, String password, AirflowRole airflowRole) throws URISyntaxException, IOException {
+        URI apiUri = buildUri(host, port, contextPath, ROLES_API_ENDPOINT, null);
         String json = getObjectMapper().writeValueAsString(airflowRole);
         return RequestBuilder.post() //
                 .setUri(apiUri) //
@@ -120,9 +121,9 @@ public class AirflowApiRequestBuilder {
                 .build();
     }
 
-    public static HttpUriRequest getUpdateUserRequest(String host, int port, String username, String password, AirflowUserRolesUpdate airflowUserRolesUpdate,
+    public static HttpUriRequest getUpdateUserRequest(String host, int port, String contextPath, String username, String password, AirflowUserRolesUpdate airflowUserRolesUpdate,
                                                       String userNameToUpdate) throws URISyntaxException, JsonProcessingException {
-        URI apiUri = buildUri(host, port, String.format(UPDATE_USER_API_ENDPOINT, userNameToUpdate), List.of(Pair.of("update_mask", "roles")));
+        URI apiUri = buildUri(host, port, contextPath, String.format(UPDATE_USER_API_ENDPOINT, userNameToUpdate), List.of(Pair.of("update_mask", "roles")));
         String json = getObjectMapper().writeValueAsString(airflowUserRolesUpdate);
         return RequestBuilder.patch() //
                 .setUri(apiUri) //
@@ -132,20 +133,20 @@ public class AirflowApiRequestBuilder {
                 .build();
     }
 
-    public static HttpUriRequest getListRolesRequest(String host, int port, String username, String password) throws URISyntaxException {
-        return getHttpUriRequestWithBasicParams(host, port, username, password, ROLES_API_ENDPOINT);
+    public static HttpUriRequest getListRolesRequest(String host, int port, String contextPath, String username, String password) throws URISyntaxException {
+        return getHttpUriRequestWithBasicParams(host, port, contextPath, username, password, ROLES_API_ENDPOINT);
     }
 
-    public static HttpUriRequest getListPermissionsRequest(String host, int port, String username, String password) throws URISyntaxException {
-        return getHttpUriRequestWithBasicParams(host, port, username, password, PERMISSIONS_API_ENDPOINT);
+    public static HttpUriRequest getListPermissionsRequest(String host, int port, String contextPath, String username, String password) throws URISyntaxException {
+        return getHttpUriRequestWithBasicParams(host, port, contextPath, username, password, PERMISSIONS_API_ENDPOINT);
     }
 
-    public static HttpUriRequest getDagsRequest(String host, int port, String username, String password) throws URISyntaxException {
-        return getHttpUriRequestWithBasicParams(host, port, username, password, DAGS_API_ENDPOINT);
+    public static HttpUriRequest getDagsRequest(String host, int port, String contextPath, String username, String password) throws URISyntaxException {
+        return getHttpUriRequestWithBasicParams(host, port, contextPath, username, password, DAGS_API_ENDPOINT);
     }
 
-    public static HttpUriRequest getDagRunsRequest(String host, int port, String username, String password, String dagId, String orderBy, String limit) throws URISyntaxException {
-        URI apiUri = buildUri(host, port, String.format(DAG_RUNS_API_ENDPOINT, dagId), List.of(Pair.of("order_by", orderBy), Pair.of("limit", limit)));
+    public static HttpUriRequest getDagRunsRequest(String host, int port, String username, String contextPath, String password, String dagId, String orderBy, String limit) throws URISyntaxException {
+        URI apiUri = buildUri(host, port, contextPath, String.format(DAG_RUNS_API_ENDPOINT, dagId), List.of(Pair.of("order_by", orderBy), Pair.of("limit", limit)));
         return RequestBuilder.get() //
                 .setUri(apiUri) //
                 .setHeader(HttpHeaders.AUTHORIZATION, getBasicAuthenticationHeader(username, password)) //
@@ -159,8 +160,8 @@ public class AirflowApiRequestBuilder {
         return objectMapper;
     }
 
-    private static HttpUriRequest getHttpUriRequestWithBasicParams(String host, int port, String username, String password, String endpoint) throws URISyntaxException {
-        URI apiUri = buildUri(host, port, endpoint, Collections.EMPTY_LIST);
+    private static HttpUriRequest getHttpUriRequestWithBasicParams(String host, int port, String contextPath, String username, String password, String endpoint) throws URISyntaxException {
+        URI apiUri = buildUri(host, port, contextPath, endpoint, Collections.emptyList());
 
         return RequestBuilder.get() //
                 .setUri(apiUri) //
@@ -174,14 +175,17 @@ public class AirflowApiRequestBuilder {
         return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes());
     }
 
-    private static URI buildUri(String host, int port, String endpoint, List<Pair<String, String>> params) throws URISyntaxException {
-        URIBuilder builder = new URIBuilder();
-        builder.setScheme("http").setHost(host).setPort(port).setPath(endpoint);
+    private static URI buildUri(String host, int port, String contextPath, String endpoint, List<Pair<String, String>> params) throws URISyntaxException {
+        String path = StringUtils.isNotBlank(contextPath) ? contextPath + endpoint : endpoint;
+
+        URIBuilder builder = new URIBuilder()
+                .setScheme("http")
+                .setHost(host)
+                .setPort(port)
+                .setPath(path);
 
         if (!CollectionUtils.isEmpty(params)) {
-            params.forEach(p -> {
-                builder.addParameter(p.getKey(), p.getValue());
-            });
+            params.forEach(p -> builder.addParameter(p.getKey(), p.getValue()));
         }
 
         return builder.build();

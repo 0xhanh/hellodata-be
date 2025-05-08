@@ -1,0 +1,2 @@
+CREATE DATABASE sftpgo;
+CREATE DATABASE keycloak;

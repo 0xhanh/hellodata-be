@@ -107,7 +107,7 @@ services:
       - "host.docker.internal:host-gateway"
       - "keycloak.localhost:host-gateway"
     environment:
-      - HELLO_DATA_INSTANCE_URL=http://localhost:38089/
+      - HELLO_DATA_INSTANCE_URL=${EXTRA_DOMAIN_SUPERSET_INSTANCE_URL:-http://localhost:38089/}
       - HELLO_DATA_INSTANCE_NAME=Superset Extra Data Domain
       - HELLO_DATA_SUPERSET_HOST=superset-app-extra-data-domain
       - HELLO_DATA_SUPERSET_PORT=8089
@@ -119,9 +119,14 @@ services:
       - keycloak
       - superset-app-extra-data-domain
     depends_on:
-      - postgres
-      - keycloak
-      - redis
-      - nats
-      - superset-app-extra-data-domain
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      nats:
+        condition: service_started
+      superset-app-extra-data-domain:
+        condition: service_healthy
     restart: on-failure

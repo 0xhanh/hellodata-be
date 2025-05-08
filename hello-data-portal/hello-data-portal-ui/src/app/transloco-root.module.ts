@@ -45,13 +45,14 @@ export class TranslocoHttpLoader implements TranslocoLoader {
     console.debug('get translation', lang);
     const timestamp = new Date().getTime();
     const url = `./assets/i18n/${lang}.json?ts=${timestamp}`;
+    console.log('Loading translation from URL:', url);
     return this.http.get<Translation>(url);
   }
 }
 
 export const HD_TRANSLOCO_CONFIG = {
-  availableLangs: ['en', 'de_CH', 'fr_CH'],
-  defaultLang: 'de_CH',
+  availableLangs: ['vi', 'en', 'de_CH'],
+  defaultLang: 'vi',
   // Remove this option if your application doesn't support changing language in runtime.
   reRenderOnLangChange: true,
   missingHandler: {

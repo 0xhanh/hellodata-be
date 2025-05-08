@@ -43,8 +43,11 @@ public class AirflowConfig {
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public AirflowClient airflowClient() {
-        return new AirflowClient(airflowProperties.getHost(), airflowProperties.getPort(), airflowProperties.getAdminUsername(),
-            airflowProperties.getAdminPassword());
+        return new AirflowClient(airflowProperties.getHost(),
+                airflowProperties.getPort(),
+                airflowProperties.getContextPath(),
+                airflowProperties.getAdminUsername(),
+                airflowProperties.getAdminPassword());
     }
 
 }

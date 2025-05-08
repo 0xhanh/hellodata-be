@@ -73,6 +73,8 @@ import {AdvancedAnalyticsViewerComponent} from "./pages/advanced-analytics/advan
 import {DataWarehouseViewerComponent} from "./pages/data-warehouse/data-warehouse-viewer.component";
 import {SubsystemUsersComponent} from "./pages/admin/subsystem-users/subsystem-users.component";
 import {UsersOverviewComponent} from "./pages/admin/users-overview/users-overview.component";
+import { EmbeddedDataGovComponent } from './pages/data-gov/embedded-data-gov.component';
+import { DataGovComponent } from './pages/admin/data-gov/data-gov.component';
 
 const routes: Routes = [
 
@@ -477,6 +479,28 @@ const routes: Routes = [
   },
   {path: naviElements.forbidden.path, component: ForbiddenComponent, canActivate: [AutoLoginPartialRoutesGuard]},
   {path: naviElements.forbidden.path, component: ForbiddenComponent, canActivate: [AutoLoginPartialRoutesGuard]},
+  {
+    path: naviElements.dataGov.path,
+    component: DataGovComponent,
+    canActivate: [AutoLoginPartialRoutesGuard, PermissionsGuard],
+  },
+  {
+    path: naviElements.embeddedDataGov.path,
+    canActivate: [AutoLoginPartialRoutesGuard, PermissionsGuard],
+    data: {
+      requiredPermissions: ['DATA_METADATA'],
+    },
+    children: [
+      {
+        path: '',
+        component: EmbeddedDataGovComponent,
+        canActivate: [AutoLoginPartialRoutesGuard, PermissionsGuard],
+        data: {
+          requiredPermissions: ['DATA_METADATA'],
+        }
+      },
+    ]
+  },
 ];
 
 @NgModule({

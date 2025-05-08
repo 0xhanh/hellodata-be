@@ -76,13 +76,11 @@ AUTH_ROLES_MAPPING = {
     "airflow_public": ["Public"],
 }
 
-keycloak_metadata_url = os.getenv('KEYCLOAK_METADATA_URL', 'http://keycloak:8080/realms/hellodata/.well-known/openid-configuration')
+keycloak_metadata_url = os.getenv('KEYCLOAK_SERVER_METADATA_URL', 'http://keycloak:8080/realms/hellodata/.well-known/openid-configuration')
 api_base_url = os.getenv('KEYCLOAK_API_BASE_URL', 'http://keycloak:8080/realms/hellodata/protocol/')
 
-log.info('keycloak_metadata_url')
-log.info(keycloak_metadata_url)
-log.info('api_base_url')
-log.info(api_base_url)
+log.info(f'keycloak_metadata_url: {keycloak_metadata_url}')
+log.info(f'api_base_url: {api_base_url}')
 
 OAUTH_PROVIDERS = [
     {
@@ -112,6 +110,14 @@ if key_der_base64 is None:
 key_der = b64decode(key_der_base64.encode())
 public_key = serialization.load_der_public_key(key_der)
 
+TEMPLATE_SEARCHPATH = [os.path.join(basedir, 'templates')]
+# CUSTOM_JAVASCRIPT = [
+#     '/www_static/custom/auth-config.js',  # Load configuration first
+#     '/www_static/custom/airflow-auth-bridge.js'  # Then load the bridge
+# ]
+# # Allow iframe embedding - add these lines
+# X_FRAME_OPTIONS = 'ALLOW-FROM ' + os.getenv('ALLOWED_ORIGINS', 'http://localhost:8080').split(',')[0]
+# CONTENT_SECURITY_POLICY = "frame-ancestors 'self' " + os.getenv('ALLOWED_ORIGINS', 'http://localhost:8080').replace(',', ' ') + ";"
 
 class HdAuthOAuthView(AuthView):
     login_template = "appbuilder/general/security/login_oauth.html"

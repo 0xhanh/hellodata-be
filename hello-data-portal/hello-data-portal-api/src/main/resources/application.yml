@@ -130,6 +130,7 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${hello-data.auth-server.url}/realms/${hello-data.auth-server.realm}
+  # see: https://www.baeldung.com/spring-email
   mail:
     host: localhost
     port: 25025

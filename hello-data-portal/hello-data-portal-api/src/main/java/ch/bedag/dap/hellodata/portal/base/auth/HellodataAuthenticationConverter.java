@@ -32,6 +32,7 @@ import ch.bedag.dap.hellodata.commons.sidecars.cache.admin.UserCache;
 import ch.bedag.dap.hellodata.portalcommon.user.entity.UserEntity;
 import ch.bedag.dap.hellodata.portalcommon.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -42,6 +43,7 @@ import java.util.*;
 
 import static ch.bedag.dap.hellodata.commons.sidecars.cache.admin.UserCache.USER_CACHE_PREFIX;
 
+@Log4j2
 @Component
 @AllArgsConstructor
 public class HellodataAuthenticationConverter implements Converter<Jwt, HellodataAuthenticationToken> {

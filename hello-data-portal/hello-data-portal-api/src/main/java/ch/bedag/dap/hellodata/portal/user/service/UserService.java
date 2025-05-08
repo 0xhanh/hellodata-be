@@ -343,7 +343,12 @@ public class UserService {
         synchronizeDashboardsForUser(userId, updateContextRolesForUserDto.getSelectedDashboardsForUser());
         UserEntity userEntity = getUserEntity(userId);
         synchronizeContextRolesWithSubsystems(userEntity, updateContextRolesForUserDto.getContextToModuleRoleNamesMap());
-        notifyUserViaEmail(userId, updateContextRolesForUserDto);
+        // hvd
+        try {
+            notifyUserViaEmail(userId, updateContextRolesForUserDto);
+        } catch (Exception e) {
+            log.error("Error while notifying user via email", e);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -641,7 +646,7 @@ public class UserService {
                 log.warn("Reply is null, please verify superset sidecar or nats connection");
             } else {
                 reply.ack();
-                log.info("[updateDashboardRoleForUser] Response received: " + new String(reply.getData()));
+                log.info("[updateDashboardRoleForUser] Response received: {}", new String(reply.getData()));
             }
         } catch (Exception e) {
             log.error("Error updating dashboard role for user", e);
