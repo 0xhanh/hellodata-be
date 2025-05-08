@@ -288,6 +288,11 @@ hello-data-portal/hello-data-portal-ui/src/config/environment.js
 /.vscode/launch.json
 
 **/.env
+**/*.tar.gz
+**/*.zip
+**/*.tar
+**/*.gz
+**/*.tgz
 /note
 /note/*
 *.whl
