@@ -24,10 +24,33 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package ch.bedag.dap.hellodata.commons.security;
+package ch.bedag.dap.hellodata.sidecars.omd.config.properties;
 
-public enum Permission {
-    USER_MANAGEMENT, ROLE_MANAGEMENT, ANNOUNCEMENT_MANAGEMENT, DATA_LINEAGE, DEVTOOLS, FAQ_MANAGEMENT, EXTERNAL_DASHBOARDS_MANAGEMENT, DOCUMENTATION_MANAGEMENT, MONITORING,
-    DASHBOARDS, DATA_MARTS, DATA_DWH, DATA_ENG, DASHBOARD_IMPORT_EXPORT, DATA_JUPYTER, USERS_OVERVIEW, DATA_FILEBROWSER,
-    DATA_METADATA, DATA_CATALOG
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+@Data
+@ConfigurationProperties(prefix = "hello-data.omd")
+public class OmdProperties {
+    private String apiEndpoint;
+    private String version;
+    private AuthProvider authProvider;
+
+    @Data
+    public static class AuthProvider {
+        private String type;
+        private ProviderConfig config;
+    }
+
+    @Data
+    public static class ProviderConfig {
+        // Properties specific to custom-oidc
+
+        private String kcClientId;
+        private String kcClientSecret;
+        private String kcEndpoint;
+
+        // Properties specific to omd jwtToken
+         private String jwtToken;
+    }
 }

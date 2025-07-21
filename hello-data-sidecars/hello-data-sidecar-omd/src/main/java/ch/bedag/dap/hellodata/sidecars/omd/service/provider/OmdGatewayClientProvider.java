@@ -24,10 +24,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package ch.bedag.dap.hellodata.commons.security;
+package ch.bedag.dap.hellodata.sidecars.omd.service.provider;
 
-public enum Permission {
-    USER_MANAGEMENT, ROLE_MANAGEMENT, ANNOUNCEMENT_MANAGEMENT, DATA_LINEAGE, DEVTOOLS, FAQ_MANAGEMENT, EXTERNAL_DASHBOARDS_MANAGEMENT, DOCUMENTATION_MANAGEMENT, MONITORING,
-    DASHBOARDS, DATA_MARTS, DATA_DWH, DATA_ENG, DASHBOARD_IMPORT_EXPORT, DATA_JUPYTER, USERS_OVERVIEW, DATA_FILEBROWSER,
-    DATA_METADATA, DATA_CATALOG
+import ch.bedag.dap.hellodata.sidecars.omd.client.OmdGatewayClient;
+import org.springframework.beans.factory.annotation.Lookup;
+import org.springframework.stereotype.Component;
+
+@Component
+public class OmdGatewayClientProvider {
+
+    @Lookup
+    public OmdGatewayClient getOmdGatewayClientInstance(){
+        return null;
+    }
 }

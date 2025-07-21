@@ -1,0 +1,86 @@
+#
+# Copyright © 2024, Kanton Bern
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the <organization> nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+hello-data:
+  #    code: 'type | key | name'
+  business-context: 'Business Domain | HelloDATA_Product_Development | HelloDATA Product Development'
+  omd:
+    api-endpoint: http://192.168.51.165:8585/api
+    version: v1
+    auth-provider:
+      type: "openmetadata"
+      config:
+        jwt-token: "eyJraWQiOiJHYjM4OWEtOWY3Ni1nZGpzLWE5MmotMDI0MmJrOTQzNTYiLCJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJvcGVuLW1ldGFkYXRhLm9yZyIsInN1YiI6ImluZ2VzdGlvbi1ib3QiLCJyb2xlcyI6WyJJbmdlc3Rpb25Cb3RSb2xlIl0sImVtYWlsIjoiaW5nZXN0aW9uLWJvdEBoZWxsb2RhdGEuY2giLCJpc0JvdCI6dHJ1ZSwidG9rZW5UeXBlIjoiQk9UIiwiaWF0IjoxNzQ1ODMzNzQ1LCJleHAiOm51bGx9.cey2DmOUfQLeVkr3ymTbOANQAuTlg_0XHipeLvVgj0ukxwxv908l4r_zjNgKtmeclhHkGq_X6CMGfs-d93cJh5et7TaqNpHe_d5fI4PesKb-ja46xG5JdCDRTN7Ky_Jyo4R16zwDQikXzjT-NUqHj1UAKypFNtRJ1J_FU-xYsY6YSvSQaQQtRY0rbK5Sc17T0PRTpZvCD4I25lF5CCZthX2FSBmemVXuGihzKA25bR-RQ98uSeSsm2JqNaf78p-6h31FYjeiHtDL7-MOZHdpo3HnCuAkYJRioakJs99Wwh6B3dE9TsA_OAdQ6jTazfn__o2QG1QAZzHOEDbOrG2PqA"
+#        jwt-token: "${OMD_JWT_TOKEN:-''}"
+#      type: "custom-oidc"
+#      config:
+#        kc-client-id: "open-metadata"
+#        kc-client-secret: "IDZNGwj0KLh481H7yuGJNebluL9c9BIq"
+#        kc-endpoint: "http://192.168.51.168:38080/realms/hellodata/protocol/openid-connect/token"
+
+  instance:
+    # enforce to be set on k8s externally
+    url: "${HELLODATA_INSTANCE_URL:-http://localhost:8585}"
+    # enforce to be set on k8s externally
+    name: "OMD"
+  sidecar:
+    publish-interval-minutes: 10
+
+spring:
+  application:
+    name: HelloDATA Sidecar for OMD
+  cloud:
+    kubernetes:
+      discovery:
+        enabled: false
+  boot:
+    admin:
+      client:
+        url: http://localhost:9090
+        username: "user"       #These two are needed so that the client
+        password: "password"   #can register at the protected server api
+        #instance:
+        #  metadata:
+        #    user.name: "user"         #These two are needed so that the server
+        #    user.password: "password" #can access the protected client endpoints
+  security:
+    user:
+      name: "user"
+      password: "password"
+
+nats:
+  spring:
+#    server: nats://192.168.51.165:34222
+#    server: nats://0.0.0.0:4222
+    server: nats://192.168.51.168:34222
+
+server:
+  port: 8085
+
+tests:
+  spring:
+    enabled:true

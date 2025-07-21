@@ -11,17 +11,32 @@ start-infra:
 start-cloudbeaver: start-infra
 	docker-compose up -d --build  cloudbeaver hello-data-cloudbeaver-gateway hello-data-sidecar-cloudbeaver
 
+start-sftpgo: start-infra
+	docker-compose up -d  sftpgo hello-data-sftpgo-sidecar
+
 start-dbt-docs: start-infra
 	docker-compose up -d --build hello-data-dbt-docs hello-data-dbt-docs-sidecar
 
 start-airflow: start-infra
-	docker-compose up -d --build airflow-init flower  hello-data-airflow-sidecar airflow-webserver airflow-scheduler airflow-worker airflow-triggerer
+	docker-compose up -d --build airflow-init hello-data-airflow-sidecar airflow-webserver airflow-scheduler airflow-worker airflow-triggerer flower
+
+stop-airflow:
+	docker-compose down airflow-init flower hello-data-airflow-sidecar airflow-webserver airflow-scheduler airflow-worker airflow-triggerer
 
 start-portal:
 	docker-compose up -d --build hello-data-portal-ui hello-data-portal-api hello-data-portal-sidecar
 
 start-default-dd:
 	docker-compose up -d --build showcase-files-default-data-domain superset-app-default-data-domain superset-init-default-data-domain superset-worker-default-data-domain superset-worker-beat-default-data-domain hello-data-superset-sidecar-default-data-domain
+
+stop-default-dd:
+	docker-compose down showcase-files-default-data-domain superset-app-default-data-domain superset-init-default-data-domain superset-worker-default-data-domain superset-worker-beat-default-data-domain hello-data-superset-sidecar-default-data-domain
+
+start-extra-dd:
+	docker-compose up -d --build showcase-files-extra-data-domain superset-app-extra-data-domain superset-init-extra-data-domain superset-worker-extra-data-domain superset-worker-beat-extra-data-domain hello-data-superset-sidecar-extra-data-domain
+
+stop-extra-dd:
+	docker-compose down showcase-files-extra-data-domain superset-app-extra-data-domain superset-init-extra-data-domain superset-worker-extra-data-domain superset-worker-beat-extra-data-domain hello-data-superset-sidecar-extra-data-domain
 
 start-airflow:
 	docker-compose up -d --build airflow-webserver airflow-scheduler airflow-worker airflow-triggerer airflow-init flower hello-data-airflow-sidecar

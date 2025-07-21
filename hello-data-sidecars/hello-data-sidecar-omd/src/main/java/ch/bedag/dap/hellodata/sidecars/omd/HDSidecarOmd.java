@@ -24,10 +24,30 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package ch.bedag.dap.hellodata.commons.security;
+package ch.bedag.dap.hellodata.sidecars.omd;
 
-public enum Permission {
-    USER_MANAGEMENT, ROLE_MANAGEMENT, ANNOUNCEMENT_MANAGEMENT, DATA_LINEAGE, DEVTOOLS, FAQ_MANAGEMENT, EXTERNAL_DASHBOARDS_MANAGEMENT, DOCUMENTATION_MANAGEMENT, MONITORING,
-    DASHBOARDS, DATA_MARTS, DATA_DWH, DATA_ENG, DASHBOARD_IMPORT_EXPORT, DATA_JUPYTER, USERS_OVERVIEW, DATA_FILEBROWSER,
-    DATA_METADATA, DATA_CATALOG
+import ch.bedag.dap.hellodata.commons.nats.annotation.EnableJetStream;
+import ch.bedag.dap.hellodata.commons.sidecars.context.HelloDataContextConfig;
+import ch.bedag.dap.hellodata.sidecars.omd.config.properties.OmdProperties;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
+@EnableDiscoveryClient
+@EnableJetStream
+@EnableScheduling
+@SpringBootApplication
+@ConfigurationPropertiesScan
+@ComponentScan("ch.bedag.dap.hellodata")
+@EnableConfigurationProperties({OmdProperties.class, HelloDataContextConfig.class})
+public class HDSidecarOmd {
+
+    public static void main(String[] args) {
+        SpringApplication.run(HDSidecarOmd.class, args);
+    }
+
 }

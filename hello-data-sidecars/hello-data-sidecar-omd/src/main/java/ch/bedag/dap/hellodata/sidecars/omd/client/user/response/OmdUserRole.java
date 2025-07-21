@@ -24,10 +24,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package ch.bedag.dap.hellodata.commons.security;
+package ch.bedag.dap.hellodata.sidecars.omd.client.user.response;
 
-public enum Permission {
-    USER_MANAGEMENT, ROLE_MANAGEMENT, ANNOUNCEMENT_MANAGEMENT, DATA_LINEAGE, DEVTOOLS, FAQ_MANAGEMENT, EXTERNAL_DASHBOARDS_MANAGEMENT, DOCUMENTATION_MANAGEMENT, MONITORING,
-    DASHBOARDS, DATA_MARTS, DATA_DWH, DATA_ENG, DASHBOARD_IMPORT_EXPORT, DATA_JUPYTER, USERS_OVERVIEW, DATA_FILEBROWSER,
-    DATA_METADATA, DATA_CATALOG
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+@AllArgsConstructor
+@NoArgsConstructor
+public class OmdUserRole {
+    private String name;
 }

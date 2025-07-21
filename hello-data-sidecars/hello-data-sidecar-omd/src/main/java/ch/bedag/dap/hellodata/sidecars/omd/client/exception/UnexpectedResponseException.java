@@ -24,10 +24,25 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package ch.bedag.dap.hellodata.commons.security;
+package ch.bedag.dap.hellodata.sidecars.omd.client.exception;
 
-public enum Permission {
-    USER_MANAGEMENT, ROLE_MANAGEMENT, ANNOUNCEMENT_MANAGEMENT, DATA_LINEAGE, DEVTOOLS, FAQ_MANAGEMENT, EXTERNAL_DASHBOARDS_MANAGEMENT, DOCUMENTATION_MANAGEMENT, MONITORING,
-    DASHBOARDS, DATA_MARTS, DATA_DWH, DATA_ENG, DASHBOARD_IMPORT_EXPORT, DATA_JUPYTER, USERS_OVERVIEW, DATA_FILEBROWSER,
-    DATA_METADATA, DATA_CATALOG
+import lombok.Getter;
+
+import java.rmi.ConnectException;
+
+public class UnexpectedResponseException extends ConnectException {
+    @Getter
+    private int code;
+    @Getter
+    private String endpoint;
+
+    public UnexpectedResponseException(String endpoint, int code, String message) {
+        this(String.format("endpoint=%s, code=%d, message=%s", endpoint, code, message));
+        this.code = code;
+        this.endpoint = endpoint;
+    }
+
+    private UnexpectedResponseException(String message) {
+        super(message);
+    }
 }
