@@ -43,7 +43,8 @@ import {
   setActiveTranslocoLanguage,
   setAvailableLanguages,
   setDefaultLanguage,
-  setSelectedLanguage
+  setSelectedLanguage,
+  userForbidden
 } from "./auth.action";
 import {AuthService} from "../../shared/services";
 import {UsersManagementService} from "../users-management/users-management.service";
@@ -141,8 +142,8 @@ export class AuthEffects {
         if (currentUserAuthData && !currentUserAuthData.userDisabled) {
           return of(fetchPermissionSuccess({currentUserAuthData}))
         }
-        console.debug("User disabled, logging out!")
-        return of(logout())
+        console.error("!!! User disabled !!!");
+        return of(userForbidden());
       }),
       catchError(e => of(authError(e)))
     )
@@ -151,8 +152,7 @@ export class AuthEffects {
   loginComplete$ = createEffect(() => {
     return this._actions$.pipe(
       ofType(loginComplete),
-      switchMap(() => this._usersManagementService.getCurrentAuthData()),
-      switchMap((currentUserAuthData) => of(fetchPermissionSuccess({currentUserAuthData}))),
+      switchMap(() => of(checkProfile())),
       catchError(e => of(authError(e)))
     )
   });
@@ -214,6 +214,7 @@ export class AuthEffects {
         this._store.select(selectProfile)
       ),
       switchMap(([action, profile]) => {
+        this._translateService.setActiveLang(action.lang);
         return this._usersManagementService.editSelectedLanguageForUser(profile.sub, action.lang).pipe(
           switchMap(() => {
             // Reuse action.lang here

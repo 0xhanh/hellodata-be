@@ -49,6 +49,7 @@ export class AppComponent implements OnInit {
   businessDomain$: Observable<string>;
   checkAuth = false;
   redirectTo$: Observable<any>;
+  isMobile$: Observable<boolean>;
 
   constructor(private store: Store<AppState>, private screen: ScreenService, public appInfo: AppInfoService,
               private title: Title) {
@@ -75,6 +76,7 @@ export class AppComponent implements OnInit {
         console.debug('saved redirect param to the session storage', param);
       }
     }));
+    this.isMobile$ = this.screen.isMobile.pipe(tap(v => console.log('is mobile', v)));
   }
 
   @HostBinding('class') get getClass() {
@@ -95,10 +97,13 @@ export class AppComponent implements OnInit {
       setTimeout(() => clearInterval(clearRedirectInterval), 5000);
     }, 500);
 
-    setInterval(() => {
-      console.debug("Check profile start")
-      this.store.dispatch(checkProfile());
-    }, 30000)
+    this.checkProfile();
   }
 
+  private checkProfile() {
+    setInterval(() => {
+      console.debug("Check profile")
+      this.store.dispatch(checkProfile());
+    }, 30000);
+  }
 }

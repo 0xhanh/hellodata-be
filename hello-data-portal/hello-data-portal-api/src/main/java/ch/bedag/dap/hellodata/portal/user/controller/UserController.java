@@ -133,10 +133,12 @@ public class UserController {
         try {
             UUID currentUserId = SecurityUtils.getCurrentUserId();
             if (currentUserId != null) {
-                userService.updateLastAccess(currentUserId.toString());
+                log.debug("Current user id {}", currentUserId);
+                String currentUserIdStr = currentUserId.toString();
+                userService.updateLastAccess(currentUserIdStr);
                 return new CurrentUserDto(SecurityUtils.getCurrentUserEmail(), getCurrentUserPermissions(), SecurityUtils.isSuperuser(),
                         helloDataContextConfig.getBusinessContext().getName(), systemProperties.isDisableLogout(),
-                        userService.isUserDisabled(currentUserId.toString()), userService.getSelectedLanguage(currentUserId.toString())
+                        userService.isUserDisabled(currentUserIdStr), userService.getSelectedLanguage(currentUserIdStr)
                 );
             }
             return new CurrentUserDto(SecurityUtils.getCurrentUserEmail(), getCurrentUserPermissions(), SecurityUtils.isSuperuser(),
@@ -216,13 +218,13 @@ public class UserController {
     @PatchMapping("/{userId}/context-roles")
     @PreAuthorize("hasAnyAuthority('USER_MANAGEMENT')")
     public void updateContextRolesForUser(@PathVariable UUID userId, @NotNull @Valid @RequestBody UpdateContextRolesForUserDto updateContextRolesForUserDto) {
-        userService.updateContextRolesForUser(userId, updateContextRolesForUserDto);
+        userService.updateContextRolesForUser(userId, updateContextRolesForUserDto, true);
     }
 
     @GetMapping("search/{email}")
     @PreAuthorize("hasAnyAuthority('USER_MANAGEMENT')")
     public List<AdUserDto> searchUser(@PathVariable String email) {
-        return userService.searchUser(email);
+        return userService.searchUserOmitCreated(email);
     }
 
     /**
