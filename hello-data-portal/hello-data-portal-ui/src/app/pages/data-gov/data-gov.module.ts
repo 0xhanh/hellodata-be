@@ -25,49 +25,52 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ///
 
-import {HttpClient} from '@angular/common/http';
-import {
-  Translation,
-  TRANSLOCO_CONFIG,
-  TRANSLOCO_LOADER,
-  translocoConfig,
-  TranslocoLoader,
-  TranslocoModule
-} from '@ngneat/transloco';
-import {Injectable, NgModule} from '@angular/core';
-
-@Injectable({providedIn: 'root'})
-export class TranslocoHttpLoader implements TranslocoLoader {
-  constructor(private http: HttpClient) {
-  }
-
-  getTranslation(lang: string) {
-    console.debug('get translation', lang);
-    const timestamp = new Date().getTime();
-    const url = `./assets/i18n/${lang}.json?ts=${timestamp}`;
-    return this.http.get<Translation>(url);
-  }
-}
-
-export const HD_TRANSLOCO_CONFIG = {
-  availableLangs: ['vi', 'en', 'de_CH'],
-  defaultLang: 'vi',
-  // Remove this option if your application doesn't support changing language in runtime.
-  reRenderOnLangChange: true,
-  missingHandler: {
-    logMissingKey: false,
-  },
-};
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {HdCommonModule} from "../../hd-common.module";
+import {TranslocoModule} from "@ngneat/transloco";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {SubsystemIframeModule} from "../../shared/components/subsystem-iframe/subsystem-iframe.component";
+import {ButtonModule} from "primeng/button";
+import {RippleModule} from "primeng/ripple";
+import {RouterLink} from "@angular/router";
+import {SharedModule} from "primeng/api";
+import {TableModule} from "primeng/table";
+import {TagModule} from "primeng/tag";
+import {DialogModule} from "primeng/dialog";
+import {InputTextModule} from "primeng/inputtext";
+import {ConfirmDialogModule} from "primeng/confirmdialog";
+import {ToolbarModule} from "primeng/toolbar";
+import {MenuModule} from "primeng/menu";
+import {AnimateModule} from "primeng/animate";
+import {DropdownModule} from "primeng/dropdown";
+import {EmbeddedDataGovComponent} from "./embedded-data-gov.component";
 
 @NgModule({
-  exports: [TranslocoModule],
-  providers: [
-    {
-      provide: TRANSLOCO_CONFIG,
-      useValue: translocoConfig(HD_TRANSLOCO_CONFIG)
-    },
-    {provide: TRANSLOCO_LOADER, useClass: TranslocoHttpLoader}
+  declarations: [
+    EmbeddedDataGovComponent
+  ],
+  imports: [
+    CommonModule,
+    HdCommonModule,
+    TranslocoModule,
+    ReactiveFormsModule,
+    SubsystemIframeModule,
+    ButtonModule,
+    RippleModule,
+    RouterLink,
+    SharedModule,
+    TableModule,
+    TagModule,
+    DialogModule,
+    InputTextModule,
+    FormsModule,
+    ConfirmDialogModule,
+    ToolbarModule,
+    MenuModule,
+    AnimateModule,
+    DropdownModule
   ]
 })
-export class TranslocoRootModule {
+export class DataGovModule {
 }

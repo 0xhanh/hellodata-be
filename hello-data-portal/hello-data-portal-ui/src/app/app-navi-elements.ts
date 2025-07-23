@@ -174,4 +174,13 @@ export const naviElements: any = {
     path: 'redirect/:location',
     label: '@Orchestration'
   },
+  // hvd
+  dataGov: {
+    path: 'data-gov',
+    label: '@Data Gov'
+  },
+  embeddedDataGov: {
+    path: 'embedded-data-gov',
+    label: '@Data Gov'
+  },
 }

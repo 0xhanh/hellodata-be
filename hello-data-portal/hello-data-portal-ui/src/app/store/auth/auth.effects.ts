@@ -160,9 +160,12 @@ export class AuthEffects {
   fetchPermissionSuccess$ = createEffect(() => {
     return this._actions$.pipe(
       ofType(fetchPermissionSuccess),
+      tap(() => console.log('fetchPermissionSuccess effect triggered')),
       switchMap((action) => {
         const defaultLanguage = this._translateService.getDefaultLanguage();
         const availableLangs = this._translateService.getAvailableLangs();
+        console.log('Default language:', defaultLanguage);
+        console.log('Current user auth data:', action.currentUserAuthData);
         const permissions = action.currentUserAuthData.permissions;
         if (!permissions || permissions.length === 0 || !permissions.includes('DASHBOARDS')) {
           return of(

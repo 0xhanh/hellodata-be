@@ -5,7 +5,7 @@
     <div class="field grid">
       <label class="col-12 mb-2 md:col-2 md:mb-0" for="user">{{ '@E-mail' | transloco }}</label>
       <div class="col-12 md:col-10">
-        <span class="p-fluid surface-border border-round appearance-none outline-none focus:border-primary">
+        <!-- <span class="p-fluid surface-border border-round appearance-none outline-none focus:border-primary">
           <p-autoComplete (completeMethod)="filterMails($event)" (onSelect)="onSelectEmail($event)"
                           [suggestions]="suggestedAdUsers" field="email" formControlName="user" id="user"
                           name="user">
@@ -15,7 +15,23 @@
                 </div>
             </ng-template>
           </p-autoComplete>
-          </span>
+          </span> -->
+          <span class="p-fluid surface-border border-round appearance-none outline-none focus:border-primary">
+          <p-autoComplete (completeMethod)="filterMails($event)" 
+            (onSelect)="onSelectEmail($event)"
+            [suggestions]="suggestedAdUsers" 
+            field="email" 
+            formControlName="user" 
+            id="user"
+            name="user"
+            [emptyMessage]="'@No results found' | transloco">
+            <ng-template let-user pTemplate="item">
+                <div class="flex align-items-center gap-1">
+                  <p [pTooltip]="user.label" class="glow top-menu-item" tooltipPosition="bottom">{{ user.label }}</p>
+                </div>
+            </ng-template>
+          </p-autoComplete>
+        </span>
         <small *ngIf="!inviteForm.controls['user'].valid && inviteForm.controls['user'].dirty"
                class="p-error">{{ '@Email is invalid' | transloco }}</small>
       </div>

@@ -25,49 +25,28 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ///
 
-import {HttpClient} from '@angular/common/http';
-import {
-  Translation,
-  TRANSLOCO_CONFIG,
-  TRANSLOCO_LOADER,
-  translocoConfig,
-  TranslocoLoader,
-  TranslocoModule
-} from '@ngneat/transloco';
-import {Injectable, NgModule} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
+import {CommonModule} from "@angular/common";
+import {SubsystemIframeModule} from "../../../shared/components/subsystem-iframe/subsystem-iframe.component";
+import {environment} from "../../../../environments/environment";
 
-@Injectable({providedIn: 'root'})
-export class TranslocoHttpLoader implements TranslocoLoader {
-  constructor(private http: HttpClient) {
-  }
-
-  getTranslation(lang: string) {
-    console.debug('get translation', lang);
-    const timestamp = new Date().getTime();
-    const url = `./assets/i18n/${lang}.json?ts=${timestamp}`;
-    return this.http.get<Translation>(url);
-  }
+@Component({
+  selector: 'app-data-gov',
+  templateUrl: './data-gov.component.html',
+  styleUrls: ['./data-gov.component.scss']
+})
+export class DataGovComponent {
+  dataGovCfg = environment.subSystemsConfig.dataGov;
+  url = this.dataGovCfg.protocol + this.dataGovCfg.host + this.dataGovCfg.domain;
 }
 
-export const HD_TRANSLOCO_CONFIG = {
-  availableLangs: ['vi', 'en', 'de_CH'],
-  defaultLang: 'vi',
-  // Remove this option if your application doesn't support changing language in runtime.
-  reRenderOnLangChange: true,
-  missingHandler: {
-    logMissingKey: false,
-  },
-};
-
 @NgModule({
-  exports: [TranslocoModule],
-  providers: [
-    {
-      provide: TRANSLOCO_CONFIG,
-      useValue: translocoConfig(HD_TRANSLOCO_CONFIG)
-    },
-    {provide: TRANSLOCO_LOADER, useClass: TranslocoHttpLoader}
-  ]
+  imports: [
+    CommonModule,
+    SubsystemIframeModule
+  ],
+  declarations: [DataGovComponent],
+  exports: [DataGovComponent]
 })
-export class TranslocoRootModule {
+export class DataGovModule {
 }

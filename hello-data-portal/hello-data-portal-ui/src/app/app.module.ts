@@ -85,6 +85,7 @@ import {PublishedAnnouncementsComponent} from "./pages/published-announcements/p
 import {AdvancedAnalyticsModule} from "./pages/advanced-analytics/advanced-analytics.module";
 import {SubsystemUsersModule} from "./pages/admin/subsystem-users/subsystem-users.module";
 import {MatomoModule, MatomoRouterModule} from 'ngx-matomo-client';
+import { DataGovModule } from './pages/data-gov/data-gov.module';
 
 registerLocaleData(localeDECH);
 
@@ -154,6 +155,7 @@ registerLocaleData(localeDECH);
       trackerUrl: environment.matomoConfig.trackerUrl,
     }),
     MatomoRouterModule,
+    DataGovModule,
   ],
   providers: [
     ScreenService,

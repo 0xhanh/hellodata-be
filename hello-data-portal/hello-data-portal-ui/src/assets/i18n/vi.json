@@ -35,8 +35,6 @@
     "@Dalete faq": "Xóa FAQ",
     "@Dashboard": "Bảng điều khiển",
     "@Dashboard Overview": "Tổng quan bảng điều khiển",
-    "@Dashboard export completed": "Dashboard đã xuất thành công",
-    "@Dashboard export started": "Dashboard đang được xuất...",
     "@Dashboard import-export": "Nhập-xuất bảng điều khiển",
     "@Dashboard metadata updated": "Đã cập nhật metadata bảng điều khiển",
     "@Dashboard permissions updated": "Đã cập nhật quyền bảng điều khiển",
@@ -248,3 +246,4 @@
     "@Yes": "Có",
     "@You are not allowed to access this page": "Bạn không được phép truy cập trang này. Liên hệ quản trị viên của bạn."
   }
+  

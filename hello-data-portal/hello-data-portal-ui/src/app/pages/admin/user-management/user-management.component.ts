@@ -128,14 +128,38 @@ export class UserManagementComponent extends BaseComponent implements OnInit, On
     this.createInterval();
   }
 
+  // override ngOnInit(): void {
+  //   super.ngOnInit();
+  //   this.inviteForm = this.fb.group({
+  //     user: [null, Validators.compose([Validators.required.bind(this),
+  //       Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$"),
+  //       Validators.email.bind(this)])],
+  //     firstName: [null, Validators.compose([Validators.required.bind(this), Validators.minLength(3), Validators.maxLength(255), Validators.pattern(/[\p{L}\p{N}].*/u)])],
+  //     lastName: [null, Validators.compose([Validators.required.bind(this), Validators.minLength(3), Validators.maxLength(255), Validators.pattern(/[\p{L}\p{N}].*/u)])],
+  //   });
+  //   this.restoreUserTableSearchFilter();
+  // }
+
   override ngOnInit(): void {
     super.ngOnInit();
     this.inviteForm = this.fb.group({
-      user: [null, Validators.compose([Validators.required.bind(this),
+      user: [null, [
+        Validators.required,
         Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$"),
-        Validators.email.bind(this)])],
-      firstName: [null, Validators.compose([Validators.required.bind(this), Validators.minLength(3), Validators.maxLength(255), Validators.pattern(/[\p{L}\p{N}].*/u)])],
-      lastName: [null, Validators.compose([Validators.required.bind(this), Validators.minLength(3), Validators.maxLength(255), Validators.pattern(/[\p{L}\p{N}].*/u)])],
+        Validators.email
+      ]],
+      firstName: [null, [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(255),
+        Validators.pattern(/[\p{L}\p{N}].*/u)
+      ]],
+      lastName: [null, [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(255),
+        Validators.pattern(/[\p{L}\p{N}].*/u)
+      ]]
     });
     this.restoreUserTableSearchFilter();
   }
@@ -146,10 +170,32 @@ export class UserManagementComponent extends BaseComponent implements OnInit, On
     this.destroy$.complete();
   }
 
+  // createUser() {
+  //   if (this.inviteForm.valid) {
+  //     const inviteFormData = this.inviteForm.getRawValue() as CreateUserForm;
+  //     this.store.dispatch(createUser({createUserForm: inviteFormData}));
+  //     this.inviteForm.reset();
+  //   }
+  // }
+
   createUser() {
     if (this.inviteForm.valid) {
-      const inviteFormData = this.inviteForm.getRawValue() as CreateUserForm;
-      this.store.dispatch(createUser({createUserForm: inviteFormData}));
+      const formValue = this.inviteForm.getRawValue();
+      const aduser: AdUser = {
+        email: formValue.user.email || formValue.user, // Handle both object and string
+        firstName: formValue.user.firstName || formValue.firstName,
+        lastName: formValue.user.lastName || formValue.lastName,
+        label: '',
+        origin: 'LOCAL' // Add appropriate origin: LOCAL, LDAP
+      }
+
+      const createUserForm: CreateUserForm = {
+        user: aduser,
+        firstName: formValue.firstName,
+        lastName: formValue.lastName
+      };
+      
+      this.store.dispatch(createUser({createUserForm}));
       this.inviteForm.reset();
     }
   }

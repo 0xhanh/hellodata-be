@@ -51,7 +51,8 @@ export const environment: Environment = window.environment != undefined ? window
   deploymentEnvironment: {
     name: 'PROD'
   },
-  locale: 'de-CH',
+  // locale: 'de-CH',
+  locale: 'vi',
   domainNamespace: '--configure me--',
   baseDomain: '--configure me--',
   subSystemsConfig: {
@@ -63,7 +64,8 @@ export const environment: Environment = window.environment != undefined ? window
     advancedAnalyticsViewer: {protocol: 'http://', host: 'jupyterhub', domain: '--configure me--'},
     monitoringStatus: {protocol: 'http://', host: 'status', domain: '--configure me--'},
     devToolsMailbox: {protocol: 'http://', host: 'mb', domain: '--configure me--'},
-    devToolsFileBrowser: {protocol: 'http://', host: 'fs', domain: '--configure me--'}
+    devToolsFileBrowser: {protocol: 'http://', host: 'fs', domain: '--configure me--'},
+    dataGov: {protocol: 'http://', host: 'om', domain: '--configure me--'}
   },
   footerConfig: {
     openSourceDataPlatformUrl: '--configure me--',

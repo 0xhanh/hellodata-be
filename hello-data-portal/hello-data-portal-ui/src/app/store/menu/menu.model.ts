@@ -74,6 +74,28 @@ export const ALL_MENU_ITEMS: any[] = [
       }
     ]
   },
+  // hvd 
+  {
+    id: 'dataCatGovMenu',
+    text: '@Data Cat Gov',
+    icon: 'fas fa-light fa-dice-d6',
+    requiresAuthentication: true,
+    requiredPermissions: ['DATA_METADATA', 'DATA_CATALOG'],
+    items: [
+      {
+        id: 'dataGovMenu',
+        text: '@Data Gov',
+        routerLink: '/embedded-data-gov',
+        requiredPermissions: ['DATA_METADATA']
+      },
+      // {
+      //   id: 'dataCatMenu',
+      //   text: '@Data Catalog',
+      //   routerLink: '/embedded-orchestration',
+      //   requiredPermissions: ['DATA_CATALOG']
+      // }
+    ]
+  },
   {
     id: 'administrationMenu',
     text: '@Administration',
