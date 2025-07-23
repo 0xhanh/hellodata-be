@@ -25,9 +25,13 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-FROM apache/airflow:slim-2.8.1-python3.10
+# FROM apache/airflow:slim-2.8.1-python3.10
+# ENV AIRFLOW_VERSION=2.8.1
+FROM apache/airflow:slim-2.10.5-python3.10
 
-ENV AIRFLOW_VERSION=2.8.1
+## Set the timezone
+ENV TZ=Asia/Ho_Chi_Minh
+ENV AIRFLOW_VERSION=2.10.5
 ENV PYTHON_VERSION=3.10
 
 ## Change container image to root user to allow for global
@@ -51,15 +55,11 @@ RUN pip install --upgrade pip  \
   &&  pip install --no-cache-dir virtualenv
 
 # dbt dependencies
-RUN pip install --no-cache-dir dbt-core==1.5.0 dbt-postgres==1.5.0
+RUN pip install --no-cache-dir dbt-core==1.9.6 dbt-postgres==1.9.0
 
 # add additional python requirements
 RUN pip install --no-cache-dir pyaxis pygdaltools pyctuator
 
-# 
-RUN pip install \
-    --extra-index-url https://pypi.fury.io/datenstreambedag/ \
-    hellodata_be_airflow_pod_operator_params==1.0.0
 #USER root
 # Copy config files to container's $AIRFLOW_HOME
 #COPY webserver_config.py $AIRFLOW_HOME/webserver_config.py
@@ -68,7 +68,6 @@ COPY airflow.cfg $AIRFLOW_HOME/airflow.cfg
 
 #COPY settings.py /home/airflow/.local/lib/python3.10/site-packages/airflow/settings.py
 
-
 ##################### Add Liquibase to manage custom database scripts ######################
 USER root
 
@@ -76,7 +75,7 @@ USER root
 RUN apt-get update && \
     apt-get install -y dos2unix && \
     # deps for airflow
-    apt-get install --no-install-recommends -y wget \
+    apt-get install --no-install-recommends -y wget && \
     apt-get install -y gosu
 
 # Make /liquibase directory and change owner to superset
@@ -103,6 +102,15 @@ RUN tar -xzf liquibase-${LIQUIBASE_VERSION}.tar.gz
 COPY --chown=airflow:root ./db/changelog /db/changelog
 COPY --chown=airflow:root ./db/wait-and-migrate.sh /db/wait-and-migrate.sh
 COPY --chown=airflow:root ./entrypoint.sh /app/entrypoint.sh
+# Airflow adds $AIRFLOW_HOME/config to sys.path when Airflow is initialized
+COPY --chown=airflow:root ./airflow_local_settings.py $AIRFLOW_HOME/config/airflow_local_settings.py
+
+# custom
+# RUN mkdir -p $AIRFLOW_HOME/www_static/custom && chown airflow:root $AIRFLOW_HOME/www_static/custom
+# COPY --chown=airflow:root ./auth-config.js.template /app/auth-config.js.template
+# COPY --chown=airflow:root ./generate-auth-config.sh /app/generate-auth-config.sh
+
+# COPY --chown=airflow:root ./airflow-auth-bridge.js $AIRFLOW_HOME/airflow-auth-bridge.js
 
 RUN chmod a+x /db/*.sh
 RUN chmod a+x /app/*.sh
@@ -112,14 +120,5 @@ RUN dos2unix /db/wait-and-migrate.sh && apt-get --purge remove -y dos2unix && rm
 
 # Switching back to using the `airflow` user
 USER airflow
-
-# Copy standard DAGs to the image
-# Have a look at entrypoint.sh to see how the DAGs are copied to the right place
-# This is done to enable mounting a k8s PVC in the /opt/airflow/dags directory
-# and still have the standard DAGs available in the image. Otherwise, the
-# mounted directory would overwrite the standard DAGs.
-RUN mkdir -p /opt/airflow/dags/hellodata-standard-dags/
-COPY ./hellodata-standard-dags/* /tmp/hellodata-standard-dags/
-
 WORKDIR /app
 ENTRYPOINT ["/usr/bin/dumb-init", "--", "/app/entrypoint.sh"]
