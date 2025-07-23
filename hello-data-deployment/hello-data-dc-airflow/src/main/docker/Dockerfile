@@ -25,18 +25,54 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-FROM bedag/hello-data-airflow
+# FROM hanhx/hello-data-airflow:2.8.1
+FROM hanhx/hello-data-airflow:latest
+
+USER root
+# Install dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    gnupg2 \
+    unixodbc-dev \
+    libgssapi-krb5-2 \
+    git \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Check Debian version (11 or 12 supported)
+RUN if ! [[ "11 12" == *"$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2 | cut -d '.' -f 1)"* ]]; \
+    then echo "Debian $(grep VERSION_ID /etc/os-release | cut -d '"' -f 2 | cut -d '.' -f 1) is not currently supported."; \
+    exit 1; \
+    fi
+
+# Install Microsoft ODBC Driver 18
+RUN curl -sSL -O https://packages.microsoft.com/config/debian/$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2 | cut -d '.' -f 1)/packages-microsoft-prod.deb \
+    && dpkg -i packages-microsoft-prod.deb \
+    && rm packages-microsoft-prod.deb \
+    && rm -f /etc/apt/sources.list.d/mssql-release.list \
+    && apt-get update \
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
+    && ACCEPT_EULA=Y apt-get install -y mssql-tools18 \
+    && echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> /home/airflow/.bashrc \
+    && rm -rf /var/lib/apt/lists/*
+
+USER airflow
+# Install Python dependencies
+RUN pip install --no-cache-dir apache-airflow-providers-odbc pyodbc
 
 ADD conf/airflow.cfg /opt/airflow/airflow.cfg
 ADD conf/webserver_config.py /opt/airflow/webserver_config.py
 
+## Remove dbt packages
+RUN pip uninstall dbt-core dbt-postgres dbt-adapters -y
 # hvd: Install requirement for biz domain
 ADD additional-requirements.txt ./additional-requirements.txt
-RUN pip install -r ./additional-requirements.txt
+# RUN pip install --upgrade -r ./additional-requirements.txt
+RUN pip install --no-cache-dir -r ./additional-requirements.txt
 
 # hvd: Installl lib-dev packages
-ADD lib-dev ./lib-dev
-RUN pip install ./lib-dev/*.whl
+ADD lib-dev ./libdev
+RUN pip install --no-cache-dir ./libdev/*.whl
 
 ADD db/02_01_add_extra_dd_connection.sql /db/changelog/changelogs/02_01_add_extra_dd_connection.sql
 RUN sed -i '/<\/databaseChangeLog>/d' /db/changelog/airflow-changelog.xml

@@ -25,7 +25,8 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-FROM bedag/hello-data-cloudbeaver
+# FROM bedag/hello-data-cloudbeaver
+FROM hanhx/cloudbeaver:dev
 
 ADD conf/cloudbeaver.conf /opt/cloudbeaver/conf/cloudbeaver.conf
 ADD conf/initial-data.conf /opt/cloudbeaver/conf/initial-data.conf

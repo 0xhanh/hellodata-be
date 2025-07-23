@@ -48,3 +48,12 @@ CREATE DATABASE HelloDATA_Product_Development_Default_Data_Domain_dwh;
 
 -- Create the dwh database for the Extra Data Domain
 CREATE DATABASE HelloDATA_Product_Development_Extra_Data_Domain_dwh;
+
+-- OpenMetadata databases
+CREATE DATABASE omd_db;
+CREATE DATABASE omd_airflow_db;
+CREATE USER omd_user WITH PASSWORD 'omd_password';
+CREATE USER omd_airflow_user WITH PASSWORD 'omd_airflow_pass';
+ALTER DATABASE omd_db OWNER TO omd_user;
+ALTER DATABASE omd_airflow_db OWNER TO omd_airflow_user;
+ALTER USER omd_airflow_user SET search_path = public;

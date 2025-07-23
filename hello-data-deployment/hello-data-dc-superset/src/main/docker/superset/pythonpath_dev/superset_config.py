@@ -101,6 +101,9 @@ WEBDRIVER_BASEURL = get_env_variable("WEBDRIVER_BASEURL")
 WEBDRIVER_BASEURL_USER_FRIENDLY = WEBDRIVER_BASEURL
 
 SQLLAB_CTAS_NO_LIMIT = True
+# running superset behind a load balancer or reverse proxy
+# https://superset.apache.org/docs/configuration/configuring-superset/
+ENABLE_PROXY_FIX = True
 
 #
 # Optionally import superset_config_docker.py (which will have been included on

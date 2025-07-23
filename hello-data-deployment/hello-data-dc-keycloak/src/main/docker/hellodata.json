@@ -2422,7 +2422,7 @@
       "clientOfflineSessionIdleTimeout": "0",
       "cibaInterval": "5",
       "realmReusableOtpCode": "false",
-      "frontendUrl": "http://keycloak.localhost:38080"
+      "frontendUrl": "http://192.168.51.168:38080"
     },
     "keycloakVersion": "20.0.5",
     "userManagedAccessAllowed": false,
