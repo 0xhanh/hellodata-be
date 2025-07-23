@@ -35,7 +35,9 @@ public enum ModuleType {
     DBT_DOCS("dbt_docs"),
     CLOUDBEAVER("cloudbeaver"),
     JUPYTERHUB("jupyterhub"),
-    SFTPGO("sftpgo");
+    SFTPGO("sftpgo"),
+    DATACAT("datacat"),
+    OPENDATAGOV("opendatagov");
 
     private final String moduleName;
 
