@@ -403,17 +403,18 @@ public class UserService {
     }
 
     @Transactional
-    public void updateContextRolesForUser(UUID userId, UpdateContextRolesForUserDto updateContextRolesForUserDto) {
+    public void updateContextRolesForUser(UUID userId, UpdateContextRolesForUserDto updateContextRolesForUserDto, boolean sendBackUserList) {
         updateContextRoles(userId, updateContextRolesForUserDto);
         synchronizeDashboardsForUser(userId, updateContextRolesForUserDto.getSelectedDashboardsForUser());
         UserEntity userEntity = getUserEntity(userId);
-        synchronizeContextRolesWithSubsystems(userEntity, updateContextRolesForUserDto.getContextToModuleRoleNamesMap());
+        synchronizeContextRolesWithSubsystems(userEntity, sendBackUserList, updateContextRolesForUserDto.getContextToModuleRoleNamesMap());
         // hvd
         try {
             notifyUserViaEmail(userId, updateContextRolesForUserDto);
         } catch (Exception e) {
             log.error("Error while notifying user via email", e);
         }
+        notifyUserViaEmail(userId, updateContextRolesForUserDto);
     }
 
     @Transactional(readOnly = true)
