@@ -60,10 +60,11 @@ x-airflow-common:
     DB_PORT: 5432
     DB_USER: postgres
     DB_PASS: postgres
+    DOMAIN_CONFIG_PATH: /opt/airflow/Extra_Data_Domain/config
 
   volumes:
     - shared-data:/opt/airflow/dags
-    - ./base/airflow/lib-dev:/opt/airflow/lib-dev
+    - /home/hanhvd/datax/hdb_storage/lib-dev:/opt/airflow/lib-dev
     - ./base/airflow/logs:/opt/airflow/logs
     - ./base/airflow/plugins:/opt/airflow/plugins
   user: "${AIRFLOW_UID:-50000}:0"
@@ -159,7 +160,10 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_MAX_CONNECTIONS: 200
     volumes:
+      - ./base/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
       - ./base/postgres/init-scripts/create_db_sftpgo.sql:/docker-entrypoint-initdb.d/create_db_sftpgo.sql
+      - hd_pgdata:/var/lib/postgresql/data
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "postgres" ]
       interval: 5s
@@ -184,17 +188,33 @@ services:
     env_file: .env
     ports:
       - 38080:8080
+      - 38443:8443
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-      KEYCLOAK_IMPORT: /opt/keycloak/data/import/hellodata.json
-      DB_VENDOR: h2
+      TZ: Asia/Ho_Chi_Minh
+      KC_HOSTNAME: ${KC_HOSTNAME:-localhost}
+      KC_HOSTNAME_STRICT_BACKCHANNEL: "true"
+      KEYCLOAK_ADMIN: ${KEYCLOAK_PASSWORD:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD:-admin}
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      DB_VENDOR: postgres
+      KC_DB: postgres
+      KC_DB_USERNAME: ${POSTGRES_USER:-postgres}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       KC_HEALTH_ENABLED: "true"
       JAVA_OPTS_APPEND: "-Dcom:redhat:fips=false"
       KC_SPI_CONFIG_UPDATE_MODE: "IGNORE"
       KC_SPI_CONFIG_UPDATE_ENABLE: "false"
+      KC_LOG_LEVEL: info
+      KEYCLOAK_FRONTEND_URL: http://192.168.51.168:38080
+      KC_HTTPS_ENABLED: false
+      # KC_HOSTNAME_URL: https://gateway-app:8443
+      # KC_HTTP_RELATIVE_PATH: /auth
+      # KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/ssl-certs/nginx-selfsigned.key
+      # KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/ssl-certs/nginx-selfsigned.crt
     volumes:
       - ./base/keycloak/hellodata.json:/opt/keycloak/data/import/hellodata.json
+      # - ./base/ssl-certs/nginx-selfsigned.crt:/opt/keycloak/conf/server.crt
+      # - ./base/ssl-certs/nginx-selfsigned.key:/opt/keycloak/conf/server.key
     healthcheck:
       test: [ "CMD", "curl", "http://localhost:8080/realms/hellodata" ]
       interval: 10s
@@ -204,7 +224,10 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "keycloak.localhost:host-gateway"
-    entrypoint: [ "/opt/keycloak/bin/kc.sh", "start-dev", "--import-realm", "--hostname", "localhost", "--http-enabled", "true" ]
+    depends_on:
+      - postgres
+    # entrypoint: [ "/opt/keycloak/bin/kc.sh", "start", "--optimized", "--import-realm", "--http-port", "8080", "--https-port", "8443" ]
+    entrypoint: [ "/opt/keycloak/bin/kc.sh", "start-dev", "--import-realm", "--http-enabled", "true" ]
 
   redis:
     platform: ${HD_PLATFORM}
@@ -252,8 +275,6 @@ services:
       - nats-ui-data:/db
     environment:
       - NATS_SERVER_URL=nats://nats:4222  # Connect to the NATS server within the network
-    volumes:
-      - ./base/nats-nui/db:/db
 
   #   smtp dev server
   smtp4dev:
@@ -312,13 +333,14 @@ services:
     image: bedag/hello-data-cloudbeaver-gateway
     env_file: .env
     environment:
-      - HELLO_DATA_CLOUDBEAVER_UPSTREAM_URI=http://cloudbeaver:8978
+      - LOGGING_LEVEL_ROOT=DEBUG
+      - HELLO_DATA_CLOUDBEAVER_UPSTREAM_URI=${CLOUDBEAVER_UPSTREAM_URI:-http://cloudbeaver:8978}
       - CLOUDBEAVER_SERVICE_NAME=cloudbeaver:8978
       - SPRING_R2DBC_URL=r2dbc:postgresql://postgres:5432/hd_cloudbeaver
       - SPRING_R2DBC_USERNAME=postgres
       - SPRING_R2DBC_PASSWORD=postgres
       - HELLO_DATA_AUTH_SERVER_REALM=hellodata
-      - HELLO_DATA_CORS_ALLOWED_ORIGINS=http://localhost:8080
+      # - HELLO_DATA_CORS_ALLOWED_ORIGINS=http://localhost:8080
       - MANAGEMENT_SERVER_PORT=8082
     ports:
       - "8087:8087"
@@ -414,6 +436,7 @@ services:
     image: bedag/hello-data-sidecar-sftpgo
     env_file: .env
     environment:
+      - HELLO_DATA_INSTANCE_URL=${SFTPGO_INSTANCE_URL:-http://localhost:8090}
       - HELLO_DATA_SFTPGO_BASE_URL=http://sftpgo:8080
       - HELLO_DATA_SIDECAR_PUBLISH_INTERVAL_SECONDS=30
       - HELLADATA_S3_CONNECTIONS_0_ACCESS_KEY=minio
@@ -689,6 +712,8 @@ services:
       timeout: 10s
       retries: 20
     restart: always
+    environment:
+      _PIP_ADDITIONAL_REQUIREMENTS: ""
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -704,6 +729,7 @@ services:
       - "host.docker.internal:host-gateway"
       - "keycloak.localhost:host-gateway"
     environment:
+      - HELLO_DATA_INSTANCE_URL=${AIRFLOW_INSTANCE_URL:-http://localhost:28080/airflow}
       - HELLO_DATA_INSTANCE_URL=http://localhost:28080/
       - HELLO_DATA_AIRFLOW_HOST=airflow-webserver
       - HELLO_DATA_AIRFLOW_PORT=8080
@@ -738,9 +764,15 @@ services:
       - postgres
 
   hello-data-portal-ui:
-    image: bedag/hello-data-dc-portal
+    # image: bedag/hello-data-dc-portal
+    image: bedag/hello-data-portal-ui
     env_file: .env
     restart: on-failure
+    volumes:
+      # - ./base/portal/environment.js:/app/config/environment.js
+      - ./base/portal/nginx_environment.js:/app/config/environment.js
+      - ./base/portal/nginx.conf:/etc/nginx/nginx.conf
+      - ./base/ssl-certs:/etc/ssl/certs
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "keycloak.localhost:host-gateway"
@@ -763,13 +795,14 @@ services:
       - "host.docker.internal:host-gateway"
       - "keycloak.localhost:host-gateway"
     environment:
-      - SPRING_PROFILES_ACTIVE=local-user-search,create-example-users
+      # - SPRING_PROFILES_ACTIVE=local-user-search,create-example-users
+      - LOGGING_LEVEL_ROOT=DEBUG
       - SPRING_MAIL_HOST=smtp4dev
       - SPRING_MAIL_PORT=25
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/hd_metainfo
       - HELLO_DATA_AUTH_SERVER_REDIRECT_URL=http://localhost:8080
       - HELLO_DATA_CONTEXTS_0=Data Domain | Default_Data_Domain | Default Data Domain
-#      - HELLO_DATA_CONTEXTS_1=Data Domain | Extra_Data_Domain | Extra Data Domain | true
+      - HELLO_DATA_CONTEXTS_1=Data Domain | Extra_Data_Domain | Extra Data Domain | true
     links:
       - nats
       - redis
@@ -821,3 +854,30 @@ services:
         condition: service_started
       hello-data-sidecar-cloudbeaver:
         condition: service_started
+
+  hello-data-omd-sidecar:
+    platform: ${HD_PLATFORM}
+    image: bedag/hello-data-sidecar-omd
+    restart: always
+    env_file: .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "keycloak.localhost:host-gateway"
+    environment:
+      - HELLO_DATA_INSTANCE_URL=${AIRFLOW_INSTANCE_URL:-http://localhost:28080/airflow}
+      - HELLO_DATA_AIRFLOW_HOST=airflow-webserver
+      - HELLO_DATA_AIRFLOW_PORT=8080
+      - HELLO_DATA_AIRFLOW_CONTEXT_PATH=/airflow
+      - HELLO_DATA_BUSINESS_CONTEXT_NAME=
+      - HELLO_DATA_SIDECAR_PUBLISH_INTERVAL_SECONDS=30
+      - HELLO_DATA_OMD_API_ENDPOINT=http://192.168.51.165:8585/api
+      - HELLO_DATA_OMD_VERSION=v1
+      - HELLO_DATA_OMD_AUTH_PROVIDER_TYPE=openmetadata
+      - HELLO_DATA_OMD_AUTH_PROVIDER_CONFIG_JWT_TOKEN=${OMD_JWT_TOKEN}
+    links:
+      - nats
+      - keycloak
+    depends_on:
+      - postgres
+      - keycloak
+      - nats

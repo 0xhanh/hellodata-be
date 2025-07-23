@@ -35,12 +35,24 @@ volumes:
       type: none
       o: bind
       device: /home/hanhvd/datax/hdb_storage
+  extra_dags:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/hanhvd/datax/hdb_storage/Extra_Data_Domain/dags
+  
   #jupyterhub-data:
   shared_scripts:
     driver: local
+  hd_pgdata:
+    driver: local
   nats-ui-data:
-
 
 networks:
   hello-data-network:
     name: hello-data-network
+    driver: default
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
