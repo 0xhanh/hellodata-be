@@ -92,7 +92,7 @@ def detect_changes(**context):
                     retries_nr += task.try_number-1
                     if task.task_id not in id_list:
                         id_list.append(task.task_id)
-            formatted_execution_date = pendulum.instance(run.execution_date).in_timezone('Europe/Zurich').strftime('%d.%m.%Y %H:%M') if run.execution_date else None
+            formatted_execution_date = pendulum.instance(run.execution_date).in_timezone('Asia/Ho_Chi_Minh').strftime('%d.%m.%Y %H:%M') if run.execution_date else None
             last_run_info[i] = {
                 'dag_id': dag_id,
                 'execution_date': str(formatted_execution_date) if run.execution_date else 'Never',
@@ -134,7 +134,7 @@ def detect_changes(**context):
                         retries_nr += task.try_number-1
                         if task.task_id not in id_list:
                             id_list.append(task.task_id)
-                formatted_execution_date = pendulum.instance(last_run.execution_date).in_timezone('Europe/Zurich').strftime('%d.%m.%Y %H:%M') if last_run.execution_date else None
+                formatted_execution_date = pendulum.instance(last_run.execution_date).in_timezone('Asia/Ho_Chi_Minh').strftime('%d.%m.%Y %H:%M') if last_run.execution_date else None
                 soll_run_info[j] = {
                     'dag_id': last_run.dag_id,
                     'execution_date': str(formatted_execution_date) if last_run.execution_date else 'Never',
