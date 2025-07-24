@@ -95,7 +95,7 @@ log.info(api_base_url)
 # ---------------------------------------------------
 
 OIDC_ISSUER = os.getenv('KEYCLOAK_BASE_URL', 'http://keycloak:8080/realms/hellodata')
-log.info(f'OIDC_ISSUER: {OIDC_ISSUER}')
+
 req = requests.get(OIDC_ISSUER)
 key_der_base64 = req.json()["public_key"]
 key_der = b64decode(key_der_base64.encode())
@@ -278,6 +278,8 @@ ENABLE_PROXY_FIX = True
 AUTH_TYPE = AUTH_OAUTH
 
 logging.getLogger('flask_appbuilder.security.manager').setLevel(logging.DEBUG)
+
+
 
 OAUTH_PROVIDERS = [
     {
